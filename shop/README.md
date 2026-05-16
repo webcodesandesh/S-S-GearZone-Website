@@ -11,11 +11,11 @@ A full-stack, highly dynamic E-Commerce application built with Spring Boot. Desi
 
 *(Add your screenshots here by saving them in a `screenshots` folder and un-commenting the lines below)*
 
-![Home Page](screenshots/home.png)
+![Home Page](screenshots/Home.png)
 ![Product View](screenshots/products.png)
 ![Products Details](screenshots/product-details.png)
 ![Login](screenshots/login.png)
-![Orders details](screenshots/Orders.png)
+![Orders details](screenshots/orders.png)
 ![Admin Product](screenshots/admin-products.png)
 ![Admin Feedback](screenshots/admin-feedback.png)
 ![Admin Reports](screenshots/admin-reports.png)
