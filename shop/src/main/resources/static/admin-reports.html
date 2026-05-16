@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Analytics | S/S GearZone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
+
+        .admin-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .brand-logo { font-size: 1.6rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .nav-menu { display: flex; gap: 15px; align-items: center; margin: 0; padding: 0; list-style: none; }
+        .nav-link { padding: 10px 20px; border-radius: 30px; font-weight: 800; color: var(--text-muted); transition: 0.3s; text-decoration: none; font-size: 0.95rem; }
+        .nav-link:hover { background: rgba(255, 104, 3, 0.1); color: var(--primary); transform: translateY(-2px); }
+        .nav-link.active { background: var(--primary); color: var(--text-main); box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3); }
+
+        .main-content { padding: 40px; min-height: 100vh; max-width: 1400px; margin: 0 auto; }
+        .dashboard-container { background: var(--surface); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border-color); padding: 30px; margin-top: 30px;}
+
+        .table-custom { border-collapse: separate; border-spacing: 0 10px; width: 100%; color: var(--text-main);}
+        .table-custom thead th { border: none; font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 20px; }
+        .table-custom tbody tr { background: var(--border-color); transition: 0.3s; }
+        .table-custom tbody tr:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 109, 57, 0.15); background: #2a2f40;}
+        .table-custom tbody td { border: none; padding: 20px; border-top: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02); font-weight: 600; color: var(--text-muted); vertical-align: middle; }
+        .table-custom tbody td:first-child { border-left: 1px solid rgba(255,255,255,0.02); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .table-custom tbody td:last-child { border-right: 1px solid rgba(255,255,255,0.02); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        .stat-card { background: var(--surface); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 30px; height: 100%; transition: 0.3s; border: 1px solid var(--border-color);}
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(255, 109, 57, 0.2); border-color: var(--primary);}
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--border-color);}
+        .stat-value { font-size: 2.5rem; font-weight: 900; color: var(--text-main); margin-top: 15px; margin-bottom: 5px; }
+
+        .status-pill { padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;}
+        .btn-primary-gaming { background: transparent; color: var(--primary); border: 1px solid var(--primary); font-weight: 800; transition: 0.3s;}
+        .btn-primary-gaming:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3);}
+
+        .nav-tabs-custom .nav-link { border: none; color: var(--text-muted); font-weight: 800; padding: 10px 20px; border-radius: 20px; margin-right: 10px;}
+        .nav-tabs-custom .nav-link.active { color: white; background: var(--primary); box-shadow: 0 4px 10px rgba(255,109,57,0.3);}
+
+        /* ===== REVENUE BREAKDOWN ===== */
+        .rev-breakdown-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+        .rev-mini-card {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.35s;
+        }
+        .rev-mini-card:hover { border-color: rgba(255,104,3,0.4); transform: translateY(-4px); box-shadow: 0 12px 30px rgba(255,104,3,0.12); }
+        .rev-mini-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .rev-weekly::before  { background: linear-gradient(90deg, #a855f7, #7c3aed); }
+        .rev-monthly::before { background: linear-gradient(90deg, #22d3ee, #0891b2); }
+        .rev-yearly::before  { background: linear-gradient(90deg, #4ade80, #16a34a); }
+        .rev-mini-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .rev-mini-label { font-size: 0.68rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; }
+        .rev-weekly  .rev-mini-label { color: #a855f7; }
+        .rev-monthly .rev-mini-label { color: #22d3ee; }
+        .rev-yearly  .rev-mini-label { color: #4ade80; }
+        .rev-toggle-group { display: flex; gap: 4px; }
+        .rev-toggle-btn {
+            font-size: 0.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;
+            padding: 3px 9px; border-radius: 10px; border: 1px solid var(--border-color);
+            background: transparent; color: var(--text-muted); cursor: pointer; transition: 0.2s;
+        }
+        .rev-toggle-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+        .rev-toggle-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+        .rev-mini-value { font-size: 1.7rem; font-weight: 900; color: var(--text-main); line-height: 1.1; }
+        .rev-mini-sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-top: 6px; }
+        .rev-mini-date-hint { font-size: 0.65rem; color: #4a5568; font-weight: 700; margin-top: 3px; }
+
+        /* Custom Date Range */
+        .date-range-section {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .date-range-section label { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .date-input {
+            background: var(--border-color); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px; color: white; padding: 8px 12px; font-size: 0.85rem;
+            font-weight: 700; font-family: 'Inter', sans-serif;
+        }
+        .date-input:focus { outline: none; border-color: var(--primary); }
+        .btn-range-apply {
+            background: var(--primary); color: white; border: none;
+            border-radius: 10px; padding: 8px 20px; font-weight: 900;
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-range-apply:hover { background: #e85b28; transform: translateY(-2px); }
+        .range-result {
+            background: var(--border-color); border-radius: 12px; padding: 10px 18px;
+            font-weight: 800; color: var(--text-main); font-size: 0.9rem;
+            display: none; align-items: center; gap: 10px;
+        }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<header class="admin-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link"><i class="bi bi-shop me-2"></i> Store</a></li>
+        <li><a href="admin-products.html" class="nav-link"><i class="bi bi-tag me-2"></i> Products</a></li>
+        <li><a href="admin-orders.html" class="nav-link"><i class="bi bi-cart me-2"></i> Orders</a></li>
+        <li><a href="admin-users.html" class="nav-link"><i class="bi bi-people me-2"></i> Customers</a></li>
+        <li><a href="admin-coupons.html" class="nav-link"><i class="bi bi-ticket-perforated me-2"></i> Coupons</a></li>
+        <li><a href="admin-reports.html" class="nav-link active"><i class="bi bi-bar-chart me-2"></i> Analytics</a></li>
+        <li><a href="admin-feedback.html" class="nav-link text-white fw-bold">
+            <i class="bi bi-chat-left-dots me-2"></i> Feedback Reports
+        </a></li>
+    </ul>
+    <a href="login.html" class="btn btn-outline-danger fw-bold rounded-pill px-4" onclick="localStorage.clear();"><i class="bi bi-box-arrow-left me-2"></i> Sign Out</a>
+</header>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-extrabold m-0 text-white" style="font-weight: 900; letter-spacing: 1px;">ANALYTICS</h2>
+            <p class="small m-0 mt-1" style="color: var(--text-muted);">Track armory and revenue stats</p>
+        </div>
+        <button class="btn btn-primary-gaming rounded-pill px-4 py-2" onclick="refreshData()"><i class="bi bi-arrow-clockwise me-2"></i> Sync Data</button>
+    </div>
+
+    <div class="row g-4 mb-0">
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="color: #60a5fa;"><i class="bi bi-bag-check-fill"></i></div><h2 class="stat-value" id="totalOrders">0</h2><span class="small fw-bold text-uppercase" style="color: var(--text-muted);">Total Orders</span></div></div>
+        <div class="col-md-4"><div class="stat-card" style="border-color: var(--primary); box-shadow: 0 0 20px rgba(255,104,3,0.15);"><div class="stat-icon" style="color: #4ade80;"><i class="bi bi-wallet2"></i></div><h2 class="stat-value" id="totalRevenue">₹0.00</h2><span class="small fw-bold text-uppercase" style="color: var(--text-muted);">Total Revenue</span></div></div>
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="color: #f87171;"><i class="bi bi-exclamation-octagon-fill"></i></div><h2 class="stat-value text-danger" id="lowStockCount">0</h2><span class="small fw-bold text-uppercase" style="color: var(--text-muted);">Needs Restock (< 10)</span></div></div>
+    </div>
+
+    <!-- ===== REVENUE BREAKDOWN ===== -->
+    <div class="rev-breakdown-row">
+
+        <!-- WEEKLY CARD -->
+        <div class="rev-mini-card rev-weekly">
+            <div class="rev-mini-header">
+                <div class="rev-mini-label"><i class="bi bi-calendar-week me-1"></i> Weekly Revenue</div>
+                <div class="rev-toggle-group">
+                    <button class="rev-toggle-btn active" onclick="switchPeriod('week','this',this)">This</button>
+                    <button class="rev-toggle-btn" onclick="switchPeriod('week','last',this)">Last</button>
+                </div>
+            </div>
+            <div class="rev-mini-value" id="weeklyRevenue">₹0</div>
+            <div class="rev-mini-sub" id="weeklyOrders">0 orders</div>
+            <div class="rev-mini-date-hint" id="weeklyDateHint"></div>
+        </div>
+
+        <!-- MONTHLY CARD -->
+        <div class="rev-mini-card rev-monthly">
+            <div class="rev-mini-header">
+                <div class="rev-mini-label"><i class="bi bi-calendar-month me-1"></i> Monthly Revenue</div>
+                <div class="rev-toggle-group">
+                    <button class="rev-toggle-btn active" onclick="switchPeriod('month','this',this)">This</button>
+                    <button class="rev-toggle-btn" onclick="switchPeriod('month','last',this)">Last</button>
+                </div>
+            </div>
+            <div class="rev-mini-value" id="monthlyRevenue">₹0</div>
+            <div class="rev-mini-sub" id="monthlyOrders">0 orders</div>
+            <div class="rev-mini-date-hint" id="monthlyDateHint"></div>
+        </div>
+
+        <!-- YEARLY CARD -->
+        <div class="rev-mini-card rev-yearly">
+            <div class="rev-mini-header">
+                <div class="rev-mini-label"><i class="bi bi-calendar-check me-1"></i> Yearly Revenue</div>
+                <div class="rev-toggle-group">
+                    <button class="rev-toggle-btn active" onclick="switchPeriod('year','this',this)">This</button>
+                    <button class="rev-toggle-btn" onclick="switchPeriod('year','last',this)">Last</button>
+                </div>
+            </div>
+            <div class="rev-mini-value" id="yearlyRevenue">₹0</div>
+            <div class="rev-mini-sub" id="yearlyOrders">0 orders</div>
+            <div class="rev-mini-date-hint" id="yearlyDateHint"></div>
+        </div>
+    </div>
+
+    <!-- ===== CUSTOM DATE RANGE ===== -->
+    <div class="date-range-section mb-4">
+        <i class="bi bi-funnel-fill" style="color:var(--primary); font-size:1.1rem;"></i>
+        <div>
+            <label>From Date</label>
+            <input type="date" class="date-input ms-2" id="rangeFrom">
+        </div>
+        <div>
+            <label>To Date</label>
+            <input type="date" class="date-input ms-2" id="rangeTo">
+        </div>
+        <button class="btn-range-apply" onclick="applyCustomRange()">
+            <i class="bi bi-search me-1"></i> Calculate
+        </button>
+        <div class="range-result" id="rangeResult">
+            <i class="bi bi-graph-up-arrow" style="color:#4ade80;"></i>
+            <span id="rangeResultText">—</span>
+        </div>
+    </div>
+
+    <div class="dashboard-container mt-4">
+        <ul class="nav nav-tabs nav-tabs-custom mb-4" id="inventoryTabs">
+            <li class="nav-item"><button class="nav-link active" onclick="renderTable('ALL')">All Gear</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="renderTable('LOW')">Low Stock (< 10)</button></li>
+            <li class="nav-item"><button class="nav-link" onclick="renderTable('OUT')">Out Of Stock</button></li>
+        </ul>
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead><tr><th>Product</th><th>SKU / ID</th><th>Category</th><th>Price</th><th>Stock</th><th class="text-end pe-4">Status</th></tr></thead>
+                <tbody id="inventoryTableBody"><tr><td colspan="6" class="text-center py-5" style="color: var(--text-muted);">Loading data...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem("role") !== "ADMIN") window.location.href = "login.html";
+    let allProducts = [];
+
+    function refreshData() {
+        loadOrderAnalytics();
+        loadInventoryAnalytics();
+    }
+
+    // Store all loaded orders globally so toggles don't re-fetch
+    let allOrders = [];
+    // Track current period selection per card
+    const periodState = { week: 'this', month: 'this', year: 'this' };
+
+    function fmt(n) { return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 }); }
+    function fmtDate(d) { return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
+
+    function getDateRange(period, mode) {
+        const now = new Date();
+        let start, end;
+
+        if (period === 'week') {
+            // This week: Sun–today  |  Last week: last Sun–last Sat
+            const dow = now.getDay(); // 0=Sun
+            if (mode === 'this') {
+                start = new Date(now); start.setDate(now.getDate() - dow); start.setHours(0,0,0,0);
+                end   = new Date(now); end.setHours(23,59,59,999);
+            } else {
+                end   = new Date(now); end.setDate(now.getDate() - dow - 1); end.setHours(23,59,59,999);
+                start = new Date(end); start.setDate(end.getDate() - 6); start.setHours(0,0,0,0);
+            }
+        } else if (period === 'month') {
+            if (mode === 'this') {
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+                end   = new Date(now); end.setHours(23,59,59,999);
+            } else {
+                start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                end   = new Date(now.getFullYear(), now.getMonth(), 0); end.setHours(23,59,59,999);
+            }
+        } else { // year
+            if (mode === 'this') {
+                start = new Date(now.getFullYear(), 0, 1);
+                end   = new Date(now); end.setHours(23,59,59,999);
+            } else {
+                start = new Date(now.getFullYear() - 1, 0, 1);
+                end   = new Date(now.getFullYear() - 1, 11, 31); end.setHours(23,59,59,999);
+            }
+        }
+        return { start, end };
+    }
+
+    function computeRevenue(orders, start, end) {
+        let rev = 0, cnt = 0;
+        orders.forEach(o => {
+            if (o.status === 'CANCELLED') return;
+            const d = new Date(o.orderDate);
+            if (d >= start && d <= end) { rev += o.totalAmount; cnt++; }
+        });
+        return { rev, cnt };
+    }
+
+    function renderPeriodCard(period, mode) {
+        const { start, end } = getDateRange(period, mode);
+        const { rev, cnt } = computeRevenue(allOrders, start, end);
+        const label = mode === 'this' ? 'this' : 'last';
+        const hint  = fmtDate(start) + ' → ' + fmtDate(end);
+
+        const ids = {
+            week:  ['weeklyRevenue',  'weeklyOrders',  'weeklyDateHint'],
+            month: ['monthlyRevenue', 'monthlyOrders', 'monthlyDateHint'],
+            year:  ['yearlyRevenue',  'yearlyOrders',  'yearlyDateHint']
+        };
+        const [revId, ordId, hintId] = ids[period];
+        const periodName = { week: 'week', month: 'month', year: 'year' }[period];
+
+        document.getElementById(revId).innerText  = fmt(rev);
+        document.getElementById(ordId).innerText  = cnt + ' order' + (cnt !== 1 ? 's' : '') + ' — ' + label + ' ' + periodName;
+        document.getElementById(hintId).innerText = hint;
+    }
+
+    function switchPeriod(period, mode, btn) {
+        periodState[period] = mode;
+        // Update toggle button active states within this card
+        const siblings = btn.parentElement.querySelectorAll('.rev-toggle-btn');
+        siblings.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderPeriodCard(period, mode);
+    }
+
+    function loadOrderAnalytics() {
+        fetch('http://localhost:8080/api/orders')
+            .then(res => res.json())
+            .then(orders => {
+                allOrders = orders;
+
+                // Total revenue (all non-cancelled)
+                let totalRevenue = 0;
+                orders.forEach(o => { if (o.status !== 'CANCELLED') totalRevenue += o.totalAmount; });
+                document.getElementById('totalOrders').innerText   = orders.length;
+                document.getElementById('totalRevenue').innerText  = fmt(totalRevenue);
+
+                // Render all 3 period cards in their current mode
+                renderPeriodCard('week',  periodState.week);
+                renderPeriodCard('month', periodState.month);
+                renderPeriodCard('year',  periodState.year);
+            });
+    }
+
+    function applyCustomRange() {
+        const fromVal = document.getElementById('rangeFrom').value;
+        const toVal   = document.getElementById('rangeTo').value;
+        if (!fromVal || !toVal) { alert('Please select both From and To dates.'); return; }
+
+        const start = new Date(fromVal); start.setHours(0,0,0,0);
+        const end   = new Date(toVal);   end.setHours(23,59,59,999);
+        if (start > end) { alert('From date must be before To date.'); return; }
+
+        const { rev, cnt } = computeRevenue(allOrders, start, end);
+        const resultEl = document.getElementById('rangeResult');
+        const textEl   = document.getElementById('rangeResultText');
+        textEl.innerHTML = `<strong>${cnt}</strong> order${cnt !== 1 ? 's' : ''} &nbsp;|&nbsp; Revenue: <strong style="color:#4ade80;">${fmt(rev)}</strong> &nbsp;<span style="color:#64748b; font-size:0.75rem;">(${fmtDate(start)} → ${fmtDate(end)})</span>`;
+        resultEl.style.display = 'flex';
+    }
+
+    function loadInventoryAnalytics() {
+        fetch('http://localhost:8080/api/products')
+            .then(res => res.json())
+            .then(products => {
+                allProducts = products;
+                // YAHAN CONDITION CHANGE KI HAI (< 10)
+                document.getElementById('lowStockCount').innerText = products.filter(p => p.stockQuantity > 0 && p.stockQuantity < 10).length;
+                renderTable('ALL');
+            });
+    }
+
+    function renderTable(filterType) {
+        document.querySelectorAll('.nav-tabs-custom .nav-link').forEach(t => t.classList.remove('active'));
+        if(event) event.target.classList.add('active');
+
+        const tb = document.getElementById('inventoryTableBody');
+        tb.innerHTML = '';
+
+        // YAHAN BHI FILTER CONDITION CHANGE KI HAI (< 10)
+        let filtered = filterType === 'LOW' ? allProducts.filter(p => p.stockQuantity > 0 && p.stockQuantity < 10) : (filterType === 'OUT' ? allProducts.filter(p => p.stockQuantity === 0) : allProducts);
+
+        if (filtered.length === 0) return tb.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-success fw-bold">No gear matches this filter.</td></tr>`;
+
+        filtered.forEach(p => {
+            // YAHAN BHI PILL CONDITION CHANGE KI HAI (< 10)
+            let status = p.stockQuantity === 0 ? `<span class="status-pill" style="background: rgba(248, 113, 113, 0.1); color: #f87171;">Out of Stock</span>` : (p.stockQuantity < 10 ? `<span class="status-pill" style="background: rgba(250, 204, 21, 0.1); color: #facc15;">Low Stock</span>` : `<span class="status-pill" style="background: rgba(74, 222, 128, 0.1); color: #4ade80;">In Stock</span>`);
+
+            tb.innerHTML += `<tr>
+                <td><div class="fw-bold fs-6 text-white"><i class="bi bi-box-seam me-2" style="color:var(--primary);"></i>${p.name}</div></td>
+                <td class="fw-bold" style="color: var(--text-muted);">#${p.id}</td>
+                <td class="fw-bold" style="color: var(--text-muted);">${p.category || 'Gear'}</td>
+                <td class="fw-bold text-white">₹${p.price.toFixed(2)}</td>
+                <td class="fw-bold fs-5 text-white">${p.stockQuantity}</td>
+                <td class="text-end pe-4">${status}</td>
+            </tr>`;
+        });
+    }
+
+    refreshData();
+</script>
+<script src="scroll-animations.js" defer></script>
+
+</html>
+

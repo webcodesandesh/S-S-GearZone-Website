@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication - S.S GearZone</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        @font-face {
+            font-family: 'Neue Montreal';
+            src: local('Inter'), sans-serif; /* Fallback to Inter which looks similar enough to neo-grotesques */
+        }
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: url(Bg/v-cyberpunk-samurai-3840x2160-18592.jpg) center ;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif; /* Using Inter as a clean substitute */
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden; 
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-logo {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        /* Main Wrapper */
+        .login-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bg-color) !important;
+        }
+
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(255, 104, 3, 0.15) 0%, rgba(11, 5, 1, 0.8) 70%);
+            z-index: 1;
+        }
+
+        /* Visual Pane - Left side by default */
+        .visual-pane {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 550px);
+            height: 100vh;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Floating shapes */
+        .shape {
+            position: absolute;
+            filter: blur(90px);
+            z-index: 2;
+            border-radius: 50%;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+        .shape-1 {
+            width: 450px; height: 450px;
+            background: rgba(255, 104, 3, 0.3);
+            top: -100px; left: -100px;
+        }
+        .shape-2 {
+            width: 350px; height: 350px;
+            background: rgba(174, 58, 2, 0.3);
+            bottom: -50px; right: 10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-50px) scale(1.1); }
+        }
+
+        /* Visual Content fading */
+        .visual-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 80%;
+            z-index: 3;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .visual-content h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .visual-content p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 420px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        .login-visual { opacity: 1; pointer-events: auto; }
+        .register-visual { opacity: 0; pointer-events: none; transform: translate(-50%, -40%); }
+
+        /* Forms Container - Right side by default */
+        .forms-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 550px;
+            height: 100vh;
+            background: #0d0906;
+            border-left: 1px solid #2a2420;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 20;
+            box-shadow: -30px 0 60px rgba(0,0,0,0.6);
+        }
+
+        .form-pane {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .sign-in-pane { opacity: 1; pointer-events: auto; transform: translateX(0); }
+        .sign-up-pane { opacity: 0; pointer-events: none; transform: translateX(50px); }
+
+        /* ACTIVE STATE (SLIDING) */
+        .login-wrapper.register-active .forms-container {
+            transform: translateX(calc(-100vw + 550px)); /* move to left */
+            box-shadow: 30px 0 60px rgba(0,0,0,0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: none;
+        }
+
+        .login-wrapper.register-active .visual-pane {
+            transform: translateX(550px); /* move to right */
+        }
+
+        .login-wrapper.register-active .sign-in-pane {
+            opacity: 0; pointer-events: none; transform: translateX(-50px);
+        }
+
+        .login-wrapper.register-active .sign-up-pane {
+            opacity: 1; pointer-events: auto; transform: translateX(0);
+        }
+
+        .login-wrapper.register-active .login-visual {
+            opacity: 0; pointer-events: none; transform: translate(-50%, -60%);
+        }
+
+        .login-wrapper.register-active .register-visual {
+            opacity: 1; pointer-events: auto; transform: translate(-50%, -50%);
+        }
+
+        /* Form Common Styles */
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            z-index: 30;
+        }
+        .brand-logo i { color: var(--primary); }
+
+        .auth-heading { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+        .auth-subheading { color: var(--text-muted); margin-bottom: 30px; font-size: 1rem; }
+
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; display: block; }
+
+        .form-control {
+            background: var(--surface); border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 12px; padding: 14px 18px; font-size: 1rem; transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08); border-color: var(--primary); color: var(--text-main);
+            box-shadow: 0 0 0 4px rgba(255, 104, 3, 0.15);
+        }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        .password-wrapper { position: relative; }
+        .toggle-icon {
+            position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--text-muted); font-size: 1.2rem; transition: 0.3s; z-index: 10;
+        }
+        .toggle-icon:hover { color: var(--text-main); }
+        
+        .btn-gaming {
+            background: var(--primary); color: var(--text-main); border-radius: 12px; padding: 16px;
+            font-weight: 600; font-size: 1.05rem; border: none; width: 100%; margin-top: 10px;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+            font-family: 'Inter', sans-serif; letter-spacing: 0.5px;
+        }
+        
+        .btn-gaming::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-20deg); transition: 0.5s;
+        }
+        .btn-gaming:hover {
+            background: var(--primary-hover); transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 104, 3, 0.4);
+        }
+        .btn-gaming:hover::after { left: 150%; }
+
+        .auth-footer { margin-top: 30px; text-align: center; font-size: 0.95rem; color: var(--text-muted); }
+        .auth-link { color: var(--text-main); font-weight: 600; text-decoration: none; transition: 0.2s; border-bottom: 1px solid transparent; cursor: pointer;}
+        .auth-link:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .error-msg {
+            display: none; background: rgba(255, 104, 3, 0.1); border: 1px solid rgba(255, 104, 3, 0.3);
+            color: var(--primary); padding: 14px 18px; border-radius: 12px; font-weight: 500;
+            margin-bottom: 24px; font-size: 0.9rem; align-items: center; gap: 10px;
+            opacity: 0; transform: translateY(-10px); transition: all 0.3s ease;
+        }
+        .error-msg.show { display: flex; opacity: 1; transform: translateY(0); }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .visual-pane { display: none; }
+            .forms-container { width: 100%; transform: none !important; }
+            .brand-logo { position: static; margin-bottom: 40px; }
+            .login-wrapper.register-active .forms-container { transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper" id="authWrapper">
+    <!-- Visual Pane (Slides over forms) -->
+    <div class="visual-pane">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        
+        <div class="visual-content login-visual">
+            <h1>LEVEL UP<br>YOUR GEAR.</h1>
+            <p>Enter the armory to access exclusive gaming peripherals, track your drops, and dominate the competition.</p>
+        </div>
+
+        <div class="visual-content register-visual">
+            <h1>JOIN THE<br>SQUAD.</h1>
+            <p>Create an account to track your orders, leave feedback, and access premium gear before anyone else.</p>
+        </div>
+    </div>
+
+    <!-- Forms Container (Slides opposite to visual) -->
+    <div class="forms-container">
+        
+        <!-- Login Pane -->
+        <div class="form-pane sign-in-pane">
+            <a href="index.html" class="brand-logo"><i class="bi bi-controller"></i> SS STORE</a>
+            
+            <div>
+                <h2 class="auth-heading">Welcome back</h2>
+                <p class="auth-subheading">Enter your credentials to access your account.</p>
+
+                <div class="error-msg" id="errorMsgLogin">
+                    <i class="bi bi-exclamation-triangle-fill"></i> 
+                    <span id="errorTextLogin">Invalid credentials!</span>
+                </div>
+
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="loginEmail" placeholder="gamer@example.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-control password-input" id="loginPassword" placeholder="Enter your password" required>
+                            <i class="bi bi-eye-slash toggle-icon" id="toggleLoginPassword"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-gaming" id="loginBtn">SIGN IN</button>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <span class="auth-link" onclick="toggleAuthMode()">Create one now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Pane -->
+        <div class="form-pane sign-up-pane">
+            <a href="index.html" class="brand-logo"><i class="bi bi-controller"></i> SS STORE</a>
+            
+            <div>
+                <h2 class="auth-heading">Create Account</h2>
+                <p class="auth-subheading">Sign up to get started.</p>
+
+                <div class="error-msg" id="errorMsgReg">
+                    <i class="bi bi-exclamation-triangle-fill"></i> 
+                    <span id="errorTextReg">Registration failed!</span>
+                </div>
+
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label">Player Name</label>
+                        <input type="text" class="form-control" id="regName" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="regEmail" placeholder="gamer@example.com" required>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label class="form-label">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" class="form-control password-input" id="regPassword" placeholder="Create a strong password" required>
+                            <i class="bi bi-eye-slash toggle-icon" id="toggleRegPassword"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-gaming" id="regBtn">DEPLOY NOW</button>
+                </form>
+
+                <div class="auth-footer">
+                    Already deployed? <span class="auth-link" onclick="toggleAuthMode()">Sign in here</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- Slide Toggle Logic ---
+    function toggleAuthMode() {
+        document.getElementById('authWrapper').classList.toggle('register-active');
+        document.getElementById('errorMsgLogin').classList.remove('show');
+        document.getElementById('errorMsgReg').classList.remove('show');
+    }
+
+    // --- Show/Hide Password Logic ---
+    function setupPasswordToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        toggle.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            this.classList.toggle('bi-eye');
+            this.classList.toggle('bi-eye-slash');
+        });
+    }
+
+    setupPasswordToggle('toggleLoginPassword', 'loginPassword');
+    setupPasswordToggle('toggleRegPassword', 'regPassword');
+
+    // --- Login Logic ---
+    function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn');
+        const errorDiv = document.getElementById('errorMsgLogin');
+        const errorTxt = document.getElementById('errorTextLogin');
+
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Authenticating...`;
+        btn.disabled = true;
+        errorDiv.classList.remove('show');
+
+        const loginData = {
+            email: document.getElementById('loginEmail').value,
+            password: document.getElementById('loginPassword').value
+        };
+
+        fetch('http://localhost:8080/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Invalid email or password!");
+            return res.json();
+        })
+        .then(user => {
+            if (user.active === false) {
+                errorTxt.innerText = "ACCESS DENIED: Your account has been blocked by Admin.";
+                errorDiv.classList.add('show');
+                btn.innerHTML = `SIGN IN`;
+                btn.disabled = false;
+                return;
+            }
+
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("userEmail", user.email);
+            localStorage.setItem("userName", user.name);
+            localStorage.setItem("role", user.role);
+
+            let targetURL = user.role === "ADMIN" ? "admin-products.html" : "index.html";
+            
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => { window.location.href = targetURL; }, 500);
+        })
+        .catch(err => {
+            errorTxt.innerText = err.message;
+            errorDiv.classList.add('show');
+            btn.innerHTML = `SIGN IN`;
+            btn.disabled = false;
+        });
+    }
+
+    // --- Register Logic ---
+    function handleRegister(e) {
+        e.preventDefault();
+        const btn = document.getElementById('regBtn');
+        const errorDiv = document.getElementById('errorMsgReg');
+        const errorTxt = document.getElementById('errorTextReg');
+
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Deploying...`;
+        btn.disabled = true;
+        errorDiv.classList.remove('show');
+
+        const userData = {
+            name: document.getElementById('regName').value,
+            email: document.getElementById('regEmail').value,
+            password: document.getElementById('regPassword').value,
+            role: "USER"
+        };
+
+        fetch('http://localhost:8080/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        })
+        .then(res => {
+            if (res.ok) {
+                // Success! Slide back to login and show success alert
+                btn.innerHTML = `DEPLOY NOW`;
+                btn.disabled = false;
+                alert("Account Created! Welcome to the Squad. Please sign in.");
+                toggleAuthMode(); 
+                document.getElementById('registerForm').reset();
+            } else {
+                throw new Error("Email might already exist.");
+            }
+        })
+        .catch(err => {
+            errorTxt.innerText = err.message;
+            errorDiv.classList.add('show');
+            btn.innerHTML = `DEPLOY NOW`;
+            btn.disabled = false;
+        });
+    }
+    // --- Initial State Check ---
+    if (window.location.hash === '#register') {
+        toggleAuthMode();
+    }
+</script>
+
+
+</body>
+</html>

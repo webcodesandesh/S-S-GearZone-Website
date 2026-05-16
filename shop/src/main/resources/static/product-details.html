@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - S.S GearZone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .top-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .brand-logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .btn-back { background: var(--border-color); color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 800; border: 1px solid var(--border-color); transition: 0.3s;}
+        .btn-back:hover { background: var(--primary); border-color: var(--primary); }
+
+        /* ================= IMAGE ZOOM & GALLERY CSS ================= */
+        .gallery-container { display: flex; gap: 20px; }
+
+        /* Thumbnails Column */
+        .thumbnails { display: flex; flex-direction: column; gap: 15px; width: 80px; }
+        .thumb-img { width: 80px; height: 80px; object-fit: contain; background: var(--border-color); border: 2px solid transparent; border-radius: 12px; cursor: pointer; padding: 5px; transition: 0.3s; opacity: 0.6; }
+        .thumb-img:hover { opacity: 1; transform: scale(1.05); }
+        .thumb-img.active { border-color: var(--primary); opacity: 1; background: var(--surface); box-shadow: 0 0 15px rgba(255, 109, 57, 0.3); }
+
+        /* Main Image Zoom Container */
+        .img-magnifier-container {
+            position: relative; width: 100%; height: 500px; background: var(--surface);
+            border-radius: 20px; border: 1px solid var(--border-color);
+            overflow: hidden; /* Hide overflow for zoom */
+            cursor: crosshair; /* Target cursor for zooming */
+            display: flex; align-items: center; justify-content: center;
+            animation: floating 4s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+            50% { transform: translateY(-10px); box-shadow: 0 25px 40px rgba(0,0,0,0.6); }
+            100% { transform: translateY(0px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        }
+        .main-product-img {
+            max-width: 90%; max-height: 90%; object-fit: contain;
+            transition: transform 0.2s ease-out; /* Smooth zoom transition */
+            transform-origin: center center; /* Default origin */
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+        }
+        /* The actual Zoom scale */
+        .img-magnifier-container:hover .main-product-img {
+            transform: scale(2.2); /* 2.2x Zoom level */
+        }
+
+        /* Product Info */
+        .prod-cat { color: var(--primary); font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem;}
+        .prod-title { font-size: 2.5rem; font-weight: 900; margin: 10px 0 20px 0; line-height: 1.2;}
+        .prod-price { font-size: 2.5rem; font-weight: 900; color: #4ade80; display: flex; align-items: center; gap: 15px;}
+        .prod-mrp { font-size: 1.2rem; color: var(--text-muted); text-decoration: line-through; font-weight: 600;}
+        .stock-badge { display: inline-block; padding: 6px 15px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px;}
+        .stock-in { background: rgba(74, 222, 128, 0.1); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3);}
+        .stock-out { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3);}
+
+        .prod-desc { color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; margin: 30px 0; background: var(--surface); padding: 25px; border-radius: 16px; border: 1px solid var(--border-color);}
+
+        .btn-add-cart { 
+            background: var(--primary); color: white; border: none; font-weight: 900; padding: 18px 40px; border-radius: 12px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; width: 100%; box-shadow: 0 10px 20px rgba(255,109,57,0.3);
+            position: relative; overflow: hidden; z-index: 1; animation: breathingPulse 2s infinite ease-in-out;
+        }
+        .btn-add-cart::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 40%); opacity: 0; transition: 0.3s; z-index: -1; transform: scale(0.5);
+        }
+        .btn-add-cart:hover::before { opacity: 1; transform: scale(1); animation: rotateSweep 3s linear infinite; }
+        @keyframes rotateSweep { 100% { transform: scale(1) rotate(360deg); } }
+        @keyframes breathingPulse { 0% { box-shadow: 0 0 15px rgba(255,109,57,0.2); } 50% { box-shadow: 0 0 25px rgba(255,109,57,0.6); } 100% { box-shadow: 0 0 15px rgba(255,109,57,0.2); } }
+        
+        .btn-add-cart:hover { background: #e85b28; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,109,57,0.5); }
+        .btn-add-cart:disabled { background: #475569; cursor: not-allowed; transform: none; animation: none; box-shadow: none; }
+        .btn-add-cart:disabled::before { display: none; }
+
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+        .cyber-anim { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .cyber-anim-1 { animation-delay: 0.1s; }
+        .cyber-anim-2 { animation-delay: 0.2s; }
+        .cyber-anim-3 { animation-delay: 0.3s; }
+        .cyber-anim-4 { animation-delay: 0.4s; }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<header class="top-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <a href="index.html" class="btn-back"><i class="bi bi-arrow-left me-2"></i>Back to Store</a>
+</header>
+
+<div class="container mt-5 pt-4 mb-5">
+    <div class="row g-5" id="productContent">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;"></div>
+            <h4 class="mt-3 text-white fw-bold">Decoding encrypted gear data...</h4>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5 pb-5 border-top border-secondary border-opacity-25 pt-5" id="recommendedContainer" style="display:none; animation: slideUpFade 0.6s ease forwards;">
+    <h3 class="fw-bold text-white mb-4"><i class="bi bi-crosshair me-2 text-warning"></i> RECOMMENDED GEAR</h3>
+    <div class="row g-4" id="relatedProductsGrid"></div>
+</div>
+
+<footer style="background: var(--bg-color); padding: 60px 0 30px; border-top: 1px solid var(--border-color); margin-top: 50px;">
+    <div class="container">
+        <div class="row g-4 border-bottom border-secondary border-opacity-25 pb-4 mb-4">
+            <div class="col-md-4">
+                <a href="index.html" class="brand-logo" style="font-size: 1.8rem; font-weight: 900; color: var(--primary); text-decoration: none; margin-bottom: 20px; display:inline-block;"><i class="bi bi-controller"></i> SS STORE</a>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Your ultimate destination for professional gaming gear and setups. Level up your play.</p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="fw-bold text-white mb-3" style="letter-spacing: 1px;">QUICK LINKS</h5>
+                <ul style="list-style: none; padding: 0; line-height: 2;">
+                    <li><a href="index.html" style="color: var(--text-muted); text-decoration: none;"><i class="bi bi-chevron-right text-warning fs-6 me-2"></i> Catalog</a></li>
+                    <li><a href="orders.html" style="color: var(--text-muted); text-decoration: none;"><i class="bi bi-chevron-right text-warning fs-6 me-2"></i> Track Orders</a></li>
+                    <li><a href="profile.html" style="color: var(--text-muted); text-decoration: none;" onclick="localStorage.setItem('gotoFeedback', 'true');"><i class="bi bi-chevron-right text-warning fs-6 me-2"></i> Provide Feedback</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="fw-bold text-white mb-3" style="letter-spacing: 1px;">SUPPORT</h5>
+                <p style="color: var(--text-muted); font-size: 0.9rem;"><i class="bi bi-envelope-at-fill me-2 text-warning"></i> support@ssstore.com<br><i class="bi bi-telephone-fill me-2 text-warning mt-2"></i> 1800-GAMING-GEAR</p>
+                <a href="profile.html" onclick="localStorage.setItem('gotoFeedback', 'true');" class="btn btn-sm btn-outline-warning rounded-pill mt-2 fw-bold px-3"><i class="bi bi-chat-dots me-2"></i> Send Feedback</a>
+            </div>
+        </div>
+        <div class="text-center" style="color: #64748b; font-size: 0.85rem; font-weight: 700;">
+            &copy; 2026 SS STORE. All rights reserved. Built for Gamers.
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let currentProduct = null;
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (!productId) {
+            document.getElementById('productContent').innerHTML = `<div class="col-12 text-center py-5"><h2 class="text-danger fw-bold">ERROR 404: GEAR NOT FOUND</h2></div>`;
+            return;
+        }
+
+        fetch(`http://localhost:8080/api/products/${productId}`)
+            .then(res => res.json())
+            .then(product => {
+                currentProduct = product;
+                renderProductDetails(product);
+                fetchRelatedProducts(product.category, product.id);
+            })
+            .catch(err => {
+                document.getElementById('productContent').innerHTML = `<div class="col-12 text-center py-5"><h2 class="text-danger fw-bold">SERVER OFFLINE</h2></div>`;
+            });
+    };
+
+    function renderProductDetails(product) {
+        // Prepare Images array (fallback to placeholder if empty)
+        let images = (product.images && product.images.length > 0) ? product.images : ['https://via.placeholder.com/600'];
+
+        // Generate Thumbnails HTML
+        let thumbnailsHtml = '';
+        images.forEach((imgUrl, index) => {
+            let activeClass = index === 0 ? 'active' : '';
+            thumbnailsHtml += `<img src="${imgUrl}" class="thumb-img ${activeClass}" onclick="swapImage(this, '${imgUrl}')">`;
+        });
+
+        // Price calculations
+        let discountHtml = '';
+        let finalPrice = product.price;
+        if (product.discountPercent > 0) {
+            let mrp = (product.price * 100) / (100 - product.discountPercent);
+            discountHtml = `<span class="prod-mrp">₹${mrp.toFixed(2)}</span> <span class="badge bg-danger fs-6 rounded-pill ms-2">${product.discountPercent}% OFF</span>`;
+        }
+
+        // Stock Info
+        let stockHtml = product.stockQuantity > 0
+            ? `<div class="stock-badge stock-in"><i class="bi bi-check-circle-fill me-1"></i> ${product.stockQuantity} Units Ready for Drop</div>`
+            : `<div class="stock-badge stock-out"><i class="bi bi-x-circle-fill me-1"></i> Out of Ammo (Stock)</div>`;
+
+        let btnDisabled = product.stockQuantity === 0 ? 'disabled' : '';
+        let btnText = product.stockQuantity === 0 ? 'OUT OF STOCK' : '<i class="bi bi-cart-plus-fill me-2"></i> ADD TO LOADOUT';
+
+        let mainSpecsHtml = '';
+        let otherSpecsHtml = '';
+        if (product.description) {
+            let lines = product.description.split('\n').filter(l => l.trim() !== '');
+            lines.forEach((line, index) => {
+                let text = line.trim();
+                let rowHtml = '';
+                
+                if (text.includes('\t')) {
+                    let parts = text.split('\t');
+                    rowHtml = `<div class="d-flex border-bottom border-light border-opacity-10 py-2"><span class="fw-bold" style="width: 40%; color: var(--text-main);">${parts[0]}</span><span style="width: 60%; line-height: 1.4;">${parts[1] || ''}</span></div>`;
+                } else if (text.includes(' - ')) {
+                    let parts = text.split(' - ');
+                    rowHtml = `<div class="d-flex border-bottom border-light border-opacity-10 py-2"><span class="fw-bold" style="width: 40%; color: var(--text-main);">${parts[0].trim()}</span><span style="width: 60%; line-height: 1.4;">${parts.slice(1).join(' - ')}</span></div>`;
+                } else if (text.includes('- ')) {
+                    let parts = text.split('- ');
+                    rowHtml = `<div class="d-flex border-bottom border-light border-opacity-10 py-2"><span class="fw-bold" style="width: 40%; color: var(--text-main);">${parts[0].trim()}</span><span style="width: 60%; line-height: 1.4;">${parts.slice(1).join('- ').trim()}</span></div>`;
+                } else {
+                    rowHtml = `<div class="py-2">${text}</div>`;
+                }
+
+                if (index < 5) mainSpecsHtml += rowHtml;
+                else otherSpecsHtml += rowHtml;
+            });
+        }
+
+        let formattedDesc = mainSpecsHtml;
+        if (otherSpecsHtml) {
+            formattedDesc += `
+                <div class="collapse" id="moreSpecsCollapse">
+                    ${otherSpecsHtml}
+                </div>
+                <a class="d-inline-block mt-3 fw-bold" style="color: #4ade80; cursor: pointer; text-decoration: none;" data-bs-toggle="collapse" href="#moreSpecsCollapse" role="button" aria-expanded="false" aria-controls="moreSpecsCollapse" onclick="setTimeout(() => { this.innerHTML = this.classList.contains('collapsed') ? '<i class=\\'bi bi-chevron-down me-1\\'></i> See More Details' : '<i class=\\'bi bi-chevron-up me-1\\'></i> See Less'; }, 100)">
+                    <i class="bi bi-chevron-down me-1"></i> See More Details
+                </a>
+            `;
+        }
+
+        document.getElementById('productContent').innerHTML = `
+            <div class="col-lg-6 cyber-anim cyber-anim-1">
+                <div class="gallery-container">
+                    <div class="thumbnails" id="thumbContainer">
+                        ${thumbnailsHtml}
+                    </div>
+
+                    <div class="img-magnifier-container" id="imgContainer">
+                        <img src="${images[0]}" class="main-product-img" id="mainImage" alt="${product.name}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 cyber-anim cyber-anim-2">
+                <div class="prod-cat"><i class="bi bi-tag-fill me-2"></i>${product.category || 'Premium Gear'}</div>
+                <h1 class="prod-title">${product.name}</h1>
+
+                ${stockHtml}
+
+                <div class="prod-price">₹${finalPrice.toFixed(2)} ${discountHtml}</div>
+
+                <button class="btn-add-cart mt-4" ${btnDisabled} onclick="addToCart(${product.id})">
+                    ${btnText}
+                </button>
+
+                <div class="mt-4 d-flex gap-4 border-bottom border-secondary border-opacity-25 pb-4" style="color:var(--text-muted); font-weight:700; font-size: 0.9rem;">
+                    <span><i class="bi bi-shield-check" style="color:#4ade80;"></i> 1 Year Warranty</span>
+                    <span><i class="bi bi-arrow-counterclockwise" style="color:#60a5fa;"></i> 7 Days Replacement</span>
+                    <span><i class="bi bi-truck" style="color:var(--primary);"></i> Fast Delivery</span>
+                </div>
+
+                <div class="mt-4" id="reviewsContainer">
+                    <h5 class="fw-bold text-white mb-3">Player Reviews</h5>
+                    <div id="reviewsList" class="text-silver">Loading transmissions...</div>
+                </div>
+
+                <div class="prod-desc mt-4 pt-4 border-top border-secondary border-opacity-25">
+                    <h5 class="fw-bold text-white mb-3"><i class="bi bi-info-circle-fill" style="color:var(--primary);"></i> Gear Specifications:</h5>
+                    ${formattedDesc}
+                </div>
+            </div>
+        `;
+
+        // Fetch and display real reviews
+        fetch(`http://localhost:8080/api/reviews/${product.id}`)
+            .then(res => res.json())
+            .then(reviews => {
+                const reviewsList = document.getElementById('reviewsList');
+                if (reviews.length === 0) {
+                    reviewsList.innerHTML = '<i>No gear reviews yet. Be the first to rate!</i>';
+                    return;
+                }
+                
+                let reviewHtml = '';
+                reviews.forEach(r => {
+                    let stars = '';
+                    for(let i=1; i<=5; i++) {
+                        stars += i <= r.rating ? '<i class="bi bi-star-fill text-warning"></i> ' : '<i class="bi bi-star text-warning"></i> ';
+                    }
+                    reviewHtml += `
+                        <div class="mb-3 p-3" style="background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold text-white">${r.reviewerName}</span>
+                                <span>${stars}</span>
+                            </div>
+                            <div class="mt-2 text-silver small">${r.comment || ''}</div>
+                        </div>
+                    `;
+                });
+                reviewsList.innerHTML = reviewHtml;
+            }).catch(() => {
+                document.getElementById('reviewsList').innerHTML = '<i>Failed to load reviews.</i>';
+            });
+
+        // ================= JAVASCRIPT FOR HOVER ZOOM =================
+        const container = document.getElementById('imgContainer');
+        const img = document.getElementById('mainImage');
+
+        container.addEventListener('mousemove', (e) => {
+            // Mouse ki position detect karo image ke andar
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x position within the element
+            const y = e.clientY - rect.top;  // y position within the element
+
+            // Calculate percentage (0 to 100%)
+            const xPercent = (x / rect.width) * 100;
+            const yPercent = (y / rect.height) * 100;
+
+            // Image ka zoom origin us percentage par set kar do jahan mouse hai
+            img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            // Mouse hatne par image wapas center se choti ho jaye
+            img.style.transformOrigin = 'center center';
+        });
+    }
+
+    // Function to swap main image when a thumbnail is clicked
+    function swapImage(thumbElement, newSrc) {
+        // Change main image source
+        document.getElementById('mainImage').src = newSrc;
+
+        // Remove 'active' class from all thumbnails
+        const thumbs = document.querySelectorAll('.thumb-img');
+        thumbs.forEach(t => t.classList.remove('active'));
+
+        // Add 'active' class to clicked thumbnail
+        thumbElement.classList.add('active');
+    }
+
+    function addToCart(id) {
+        if (!currentProduct) return;
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let item = cart.find(i => i.id === id);
+        if (item) {
+            if (item.quantity < currentProduct.stockQuantity) item.quantity += 1;
+            else return alert("Maximum stock limit reached!");
+        } else {
+            let img = (currentProduct.images && currentProduct.images.length > 0) ? currentProduct.images[0] : 'https://via.placeholder.com/200';
+            cart.push({ id: currentProduct.id, name: currentProduct.name, price: currentProduct.price, image: img, quantity: 1, maxStock: currentProduct.stockQuantity });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+
+        // Show quick alert and redirect to cart
+        alert(currentProduct.name + " added to your Loadout!");
+        window.location.href = "cart.html";
+    }
+
+    function fetchRelatedProducts(category, currentId) {
+        fetch('http://localhost:8080/api/products')
+            .then(res => res.json())
+            .then(allProducts => {
+                let related = allProducts.filter(p => p.id !== currentId && p.category === category);
+                // Shuffle array to recommend random
+                related.sort(() => 0.5 - Math.random());
+                let topRelated = related.slice(0, 4);
+
+                if(topRelated.length > 0) {
+                    document.getElementById('recommendedContainer').style.display = 'block';
+                    let grid = document.getElementById('relatedProductsGrid');
+                    grid.innerHTML = '';
+                    topRelated.forEach(p => {
+                        let img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/200';
+                        grid.innerHTML += `
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; transition: 0.3s; cursor: pointer; text-align: center; height: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" onclick="window.location.href='product-details.html?id=${p.id}'" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 35px rgba(255,109,57,0.2)'; this.style.borderColor='rgba(255, 104, 3, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.3)'; this.style.borderColor='var(--border-color)';">
+                                <div style="height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                    <img src="${img}" style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));">
+                                </div>
+                                <div style="color: #60a5fa; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${p.category || 'Gear'}</div>
+                                <div style="color: white; font-weight: 800; margin-top: 5px; font-size: 0.95rem; line-height: 1.3;" class="text-truncate">${p.name}</div>
+                                <div style="color: #facc15; font-size: 1.2rem; font-weight: 900; margin-top: 10px;">₹${p.price}</div>
+                            </div>
+                        </div>`;
+                    });
+                }
+            });
+    }
+</script>
+<script src="scroll-animations.js" defer></script>
+
+</html>
+

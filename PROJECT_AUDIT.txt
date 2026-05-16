@@ -1,0 +1,273 @@
+================================================================================
+        S.S GEARZONE — REAL-WORLD PROJECT AUDIT REPORT
+        Spring Boot + Vanilla JS E-Commerce Application
+        Generated: 29 April 2026
+================================================================================
+
+[ SCORING SYSTEM ]
+  ✅  DONE        — Fully implemented and working
+  ⚠️  PARTIAL     — Exists but has known gaps or limitations
+  ❌  MISSING     — Not built yet, required for real-world production
+  🚀  BONUS       — Not required but would elevate the project
+
+
+================================================================================
+  SECTION 1 — BACKEND (Spring Boot + MySQL)
+================================================================================
+
+  ✅  Application entry point (Application.java with @SpringBootApplication)
+  ✅  MySQL database integration (Spring Data JPA + Hibernate)
+  ✅  Auto table creation (ddl-auto=update)
+  ✅  CORS configured (requests from frontend allowed)
+  ✅  Email service (Gmail SMTP via JavaMailSender)
+
+  — ENTITIES (Database Tables) —
+  ✅  User entity (id, name, email, password, role, phone, address)
+  ✅  Product entity (id, name, price, description, category, stock, image)
+  ✅  Order entity (id, userEmail, totalAmount, status, orderDate, items)
+  ✅  Coupon entity (id, code, discountPercent, isActive)
+  ✅  Review entity (id, productId, userEmail, rating, comment, date)
+  ✅  Feedback entity (id, userEmail, message, date)
+  ✅  Wishlist entity (id, userEmail, productId)
+  ✅  Category entity (id, name)
+
+  — CONTROLLERS / REST APIs —
+  ✅  UserController     — register, login, list users, delete user
+  ✅  ProductController  — CRUD products, image upload, stock update
+  ✅  OrderController    — place order, list orders, update status, cancel
+  ✅  CouponController   — CRUD coupons, apply coupon, toggle active
+  ✅  ReviewController   — add review, get reviews by product
+  ✅  FeedbackController — submit feedback, list all feedback (admin)
+  ✅  WishlistController — add/remove/list wishlist items
+  ✅  CategoryController — list categories
+  ✅  SseController      — real-time SSE events push (product/coupon updates)
+
+  — SERVICES —
+  ✅  UserService    — user registration and lookup
+  ✅  ProductService — product search helpers
+  ✅  EmailService   — order confirmation emails
+  ✅  SseService     — broadcasting SSE events to connected clients
+  ✅  CategoryService
+
+  ⚠️  NO Spring Security — passwords stored in plain text in database
+        Risk: Anyone with DB access can read all passwords
+        Fix needed: BCrypt password hashing + Spring Security filter
+
+  ⚠️  NO JWT / Session tokens — auth is only via localStorage role check
+        Risk: Any user can change localStorage to "ADMIN" and access admin
+        Fix needed: JWT token issued on login, validated on every API call
+
+  ⚠️  NO input validation — no @Valid or @NotBlank on entity fields
+        Risk: Empty products, null prices, blank emails can be saved
+        Fix needed: Bean Validation annotations + global exception handler
+
+  ⚠️  NO global exception handler (@ControllerAdvice)
+        Risk: Raw Spring error stack traces exposed to frontend
+        Fix needed: @RestControllerAdvice returning clean JSON error responses
+
+  ❌  NO payment gateway integration (Razorpay / PayPal / Stripe)
+        Currently: Orders are placed without any real payment
+        Fix needed: Integrate Razorpay test API for payment before order
+
+  ❌  NO order items table in database
+        Currently: Cart items are stored as a String/JSON blob in Order
+        Fix needed: Separate OrderItem entity (orderId, productId, qty, price)
+
+  ❌  NO stock deduction on order placement
+        Risk: Overselling — 10 users can order last 1 item
+        Fix needed: Deduct stockQuantity in OrderController when order placed
+
+  ❌  NO email credentials security
+        Risk: Gmail password is exposed in application.properties plain text
+        Fix needed: Use environment variables or application-secrets.properties
+
+  ❌  NO pagination on product/order APIs
+        Risk: 1000+ products will slow down entire page
+        Fix needed: Pageable in Spring JPA + page/size params in API
+
+  ❌  NO image storage system
+        Currently: Images stored locally in /images folder
+        Risk: Files lost on server restart, no CDN
+        Fix needed: Cloudinary or AWS S3 for image hosting
+
+  ❌  NO coupon expiry date
+        Currently: Coupons only have isActive flag
+        Fix needed: Add expiryDate field to Coupon entity
+
+
+================================================================================
+  SECTION 2 — FRONTEND (HTML + Vanilla JS)
+================================================================================
+
+  — PAGES BUILT —
+  ✅  index.html          — Homepage with product slider, coupon strip, SSE, game
+  ✅  products.html       — Product listing with search, filter, category tabs
+  ✅  product-details.html — Product detail with reviews, add to cart
+  ✅  cart.html           — Cart with quantity control, coupon apply, total
+  ✅  checkout.html       — Checkout form with address and order placement
+  ✅  order-success.html  — Post-order success screen with animation
+  ✅  orders.html         — Customer order history with status tracking
+  ✅  invoice.html        — Printable invoice per order
+  ✅  login.html          — Login page
+  ✅  register.html       — Registration page
+  ✅  profile.html        — User profile with edit name, phone, address, avatar
+  ✅  wishlist.html       — Wishlist page
+  ✅  info.html           — About / contact / policy info page
+
+  — ADMIN PANEL PAGES —
+  ✅  admin-products.html — Add, edit, delete products with image upload
+  ✅  admin-orders.html   — View and update order statuses
+  ✅  admin-users.html    — View all users, delete user
+  ✅  admin-coupons.html  — Add, edit, toggle, delete coupons
+  ✅  admin-reports.html  — Analytics: total orders, revenue, weekly/monthly/yearly breakdown, custom date range, inventory table
+  ✅  admin-feedback.html — View all customer feedback
+
+  — FEATURES BUILT —
+  ✅  Real-time SSE sync (product updates push to storefront without reload)
+  ✅  Dynamic coupon strip on homepage (fetches live from backend)
+  ✅  Dynamic coupon ribbon on products page (fetches live from backend)
+  ✅  Coupon apply at cart uses backend API (no hardcoded discounts)
+  ✅  Add to cart with quantity management in localStorage
+  ✅  Search with suggestions
+  ✅  Category filter tabs
+  ✅  Product ratings display
+  ✅  Review submission
+  ✅  Wishlist add/remove
+  ✅  Order status color badges
+  ✅  Invoice print
+  ✅  Admin-only page guard (role check from localStorage)
+  ✅  Rotating promo ticker (aura/gamer quotes)
+  ✅  Random background images per page
+  ✅  Solid dark theme (consistent across all pages)
+  ✅  Glassmorphic elements removed (clean solid design)
+  ✅  Mobile responsive (Bootstrap 5 grid)
+  ✅  Scroll animations (scroll-animations.js)
+  ✅  Loader animation
+  ✅  2D browser game embedded in homepage
+
+  ⚠️  ADMIN AUTH — only localStorage.role === "ADMIN" check
+        Risk: Inspecting browser console → change role → full admin access
+        Fix needed: Server-side token validation before serving admin data
+
+  ⚠️  CART is localStorage only — not saved to database per user
+        Risk: Cart lost on browser clear, can't resume on different device
+        Fix needed: Save cart to backend (CartItem table) linked to userEmail
+
+  ⚠️  REGISTER page (register.html) is nearly empty (306 bytes)
+        Fix needed: Build proper registration form (name, email, password)
+
+  ⚠️  NO loading skeletons — pages show blank until API responds
+        Fix needed: Skeleton cards while products/orders load
+
+  ❌  NO real payment UI / Razorpay checkout flow
+  ❌  NO forgot password / OTP reset flow
+  ❌  NO product image zoom on product detail page
+  ❌  NO order tracking with real steps timeline (Placed→Packed→Shipped→Delivered)
+  ❌  NO notification system (bell icon with unread count)
+  ❌  NO product comparison feature
+  ❌  NO recently viewed products section
+
+
+================================================================================
+  SECTION 3 — SECURITY (Critical for Production)
+================================================================================
+
+  ⚠️  Passwords in plain text in database
+  ⚠️  No authentication tokens (JWT) — role stored in localStorage only
+  ⚠️  Gmail SMTP password exposed in application.properties
+  ⚠️  No HTTPS (running on HTTP localhost only)
+  ❌  No rate limiting on login API (brute force possible)
+  ❌  No CSRF protection
+  ❌  No SQL injection protection (Spring JPA partially covers this)
+  ❌  No XSS sanitization on user-submitted content (reviews, feedback)
+
+
+================================================================================
+  SECTION 4 — DEPLOYMENT (For Live Production)
+================================================================================
+
+  ❌  Not deployed — runs only on localhost:8080
+  ❌  No Docker container setup
+  ❌  No CI/CD pipeline (GitHub Actions)
+  ❌  No cloud hosting (AWS / Railway / Render / Heroku)
+  ❌  No domain name + SSL certificate (HTTPS)
+  ❌  No production database (using localhost MySQL only)
+  ❌  No environment-specific config (dev vs prod properties)
+
+
+================================================================================
+  SECTION 5 — CODE QUALITY
+================================================================================
+
+  ✅  Clean MVC structure (controller / service / repository / entity)
+  ✅  Consistent package naming
+  ✅  Single responsibility per controller
+  ⚠️  No unit tests (JUnit / Mockito) — 0 test files written
+  ⚠️  No API documentation (Swagger / OpenAPI)
+  ⚠️  Service layer missing for Order, Coupon, Review (logic in controller)
+  ❌  No Lombok (verbose boilerplate getters/setters in entities)
+  ❌  No DTOs used consistently (some endpoints return raw entities)
+
+
+================================================================================
+  SUMMARY SCORECARD
+================================================================================
+
+  CATEGORY              DONE    PARTIAL    MISSING
+  ─────────────────────────────────────────────────
+  Backend APIs           9/9      5          8
+  Database Entities      8/8      0          2 (OrderItem, Coupon expiry)
+  Frontend Pages        19/19     3          0
+  Frontend Features      22       5          6
+  Security               0        4          5
+  Deployment             0        0          6
+  Code Quality           3        3          3
+  ─────────────────────────────────────────────────
+  OVERALL             ~65%    done for academic/portfolio project
+                      ~30%    done for real production deployment
+
+
+================================================================================
+  TOP 5 THINGS TO BUILD NEXT (Priority Order)
+================================================================================
+
+  1. 🔐 Password Hashing (BCrypt)
+        — Add spring-security-crypto, hash on register, verify on login
+        — Estimated time: 2–3 hours
+
+  2. 🔐 JWT Authentication
+        — Issue token on login, send in Authorization header, validate on API
+        — Estimated time: 1–2 days
+
+  3. 💳 Razorpay Payment Gateway
+        — Add Razorpay test key, show payment popup before order placement
+        — Estimated time: 1 day
+
+  4. 📦 Stock Deduction on Order
+        — In OrderController, reduce product.stockQuantity when order is placed
+        — Estimated time: 2 hours
+
+  5. 📝 Register Page
+        — register.html is currently almost empty — build the full form
+        — Estimated time: 3–4 hours
+
+
+================================================================================
+  WHAT MAKES THIS PROJECT IMPRESSIVE (For Resume/College)
+================================================================================
+
+  ✔  Full-stack Spring Boot + Vanilla JS (no framework dependency)
+  ✔  Real-time SSE event broadcasting
+  ✔  Live coupon sync from admin to storefront
+  ✔  Admin panel with analytics and inventory management
+  ✔  Revenue breakdown (weekly/monthly/yearly + custom date range)
+  ✔  Email notifications via Gmail SMTP
+  ✔  Embedded browser 2D game
+  ✔  Dark solid theme with micro-animations
+  ✔  10+ admin + customer pages
+  ✔  MySQL relational database with 8 tables
+
+
+================================================================================
+  END OF AUDIT REPORT
+================================================================================

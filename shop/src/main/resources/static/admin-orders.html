@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Orders | S/S GearZone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
+
+        /* ================= TOP NAVBAR ================= */
+        .admin-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .brand-logo { font-size: 1.6rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+
+        .nav-menu { display: flex; gap: 15px; align-items: center; margin: 0; padding: 0; list-style: none; }
+        .nav-link { padding: 10px 20px; border-radius: 30px; font-weight: 800; color: var(--text-muted); transition: 0.3s; text-decoration: none; font-size: 0.95rem; }
+        .nav-link:hover { background: rgba(255, 104, 3, 0.1); color: var(--primary); transform: translateY(-2px); }
+        .nav-link.active { background: var(--primary); color: var(--text-main); box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3); }
+
+        /* ================= MAIN CONTENT ================= */
+        .main-content { padding: 40px; min-height: 100vh; max-width: 1400px; margin: 0 auto; }
+        .dashboard-container { background: var(--surface); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border-color); padding: 30px; margin-top: 30px;}
+
+        .table-custom { border-collapse: separate; border-spacing: 0 10px; width: 100%; color: var(--text-main);}
+        .table-custom thead th { border: none; font-weight: 800; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 15px 20px; }
+        .table-custom tbody tr { background: var(--border-color); transition: 0.3s; }
+        .table-custom tbody tr:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 109, 57, 0.15); border-color: var(--primary); background: #2a2f40;}
+        .table-custom tbody td { border: none; padding: 20px; border-top: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02); font-weight: 600; color: var(--text-muted); vertical-align: middle; }
+        .table-custom tbody td:first-child { border-left: 1px solid rgba(255,255,255,0.02); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .table-custom tbody td:last-child { border-right: 1px solid rgba(255,255,255,0.02); border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        .badge-pill { padding: 8px 12px; border-radius: 50rem; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; }
+        .bg-cancelled { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+        .bg-delivered { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+        .bg-shipped { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
+        .bg-processing { background: rgba(250, 204, 21, 0.1); color: #facc15; }
+
+        .status-select { border-radius: 8px; border: 1px solid var(--border-color); font-weight: 800; color: var(--text-main); padding: 8px 12px; cursor: pointer; transition: 0.2s; background-color: var(--border-color); }
+        .status-select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(255, 109, 57, 0.2); }
+        .status-select option { background: var(--surface); color: var(--text-main);}
+
+        .btn-primary-gaming { background: transparent; color: var(--primary); border: 1px solid var(--primary); font-weight: 800; transition: 0.3s;}
+        .btn-primary-gaming:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3);}
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<header class="admin-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <ul class="nav-menu">
+        <li><a href="index.html" class="nav-link"><i class="bi bi-shop me-2"></i> Store</a></li>
+        <li><a href="admin-products.html" class="nav-link"><i class="bi bi-tag me-2"></i> Products</a></li>
+        <li><a href="admin-orders.html" class="nav-link active"><i class="bi bi-cart me-2"></i> Orders</a></li>
+        <li><a href="admin-users.html" class="nav-link"><i class="bi bi-people me-2"></i> Customers</a></li>
+        <li><a href="admin-coupons.html" class="nav-link"><i class="bi bi-ticket-perforated me-2"></i> Coupons</a></li>
+        <li><a href="admin-reports.html" class="nav-link"><i class="bi bi-bar-chart me-2"></i> Analytics</a></li>
+        <li><a href="admin-feedback.html" class="nav-link text-white fw-bold">
+            <i class="bi bi-chat-left-dots me-2"></i> Feedback Reports
+        </a></li>
+    </ul>
+    <a href="login.html" class="btn btn-outline-danger fw-bold rounded-pill px-4" onclick="localStorage.clear();"><i class="bi bi-box-arrow-left me-2"></i> Sign Out</a>
+</header>
+
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-extrabold m-0 text-white" style="font-weight: 900; letter-spacing: 1px;">ORDERS</h2>
+            <p class="small m-0 mt-1" style="color: var(--text-muted);">Track and dispatch gaming gear</p>
+        </div>
+        <button class="btn btn-primary-gaming rounded-pill px-4 py-2" onclick="loadOrders()"><i class="bi bi-arrow-clockwise me-2"></i> Sync Data</button>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead><tr><th>Order ID</th><th>Customer</th><th>Item Summary</th><th>Timeline</th><th>Total</th><th>Status</th><th class="text-end pe-4">Action</th></tr></thead>
+                <tbody id="ordersTableBody"><tr><td colspan="7" class="text-center py-5" style="color: var(--text-muted);">Loading orders...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-4">
+    <div id="statusToast" class="toast align-items-center text-white border-0 shadow-lg rounded-3" style="background: var(--border-color); border-left: 4px solid var(--primary) !important;">
+        <div class="d-flex p-2"><div class="toast-body fw-bold fs-6" id="toastMessage"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    if (localStorage.getItem("role") !== "ADMIN") window.location.href = "login.html";
+    const statusToast = new bootstrap.Toast(document.getElementById('statusToast'));
+
+    function loadOrders() {
+        fetch('http://localhost:8080/api/orders').then(res => res.json()).then(orders => {
+            const tb = document.getElementById('ordersTableBody'); tb.innerHTML = ''; orders.reverse();
+            if (orders.length === 0) return tb.innerHTML = `<tr><td colspan="7" class="text-center py-5" style="color: var(--text-muted);">No orders yet.</td></tr>`;
+            orders.forEach(o => {
+                let items = JSON.parse(o.cartItems);
+                let mainItem = items[0].name.length > 30 ? items[0].name.substring(0, 30) + "..." : items[0].name;
+                let sum = items.length > 1 ? `<span class="text-white">${mainItem}</span> <span class="badge" style="background: var(--border-color); border:1px solid rgba(255,255,255,0.2);">+${items.length-1}</span>` : `<span class="text-white">${mainItem}</span>`;
+                let st = o.status || "PROCESSING";
+                let badge = st === "CANCELLED" ? `<span class="badge-pill bg-cancelled"><i class="bi bi-x-circle-fill"></i> Cancelled</span>` : st === "DELIVERED" ? `<span class="badge-pill bg-delivered"><i class="bi bi-check-circle-fill"></i> Delivered</span>` : st === "SHIPPED" ? `<span class="badge-pill bg-shipped"><i class="bi bi-truck"></i> Shipped</span>` : `<span class="badge-pill bg-processing"><i class="bi bi-hourglass-split"></i> Processing</span>`;
+                let action = (st === "CANCELLED" || st === "DELIVERED") ? `<span class="small fw-bold text-uppercase" style="color: var(--text-muted);"><i class="bi bi-lock-fill"></i> Locked</span>` : `<select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)"><option value="PROCESSING" ${st==='PROCESSING'?'selected':''}>⏳ Processing</option><option value="SHIPPED" ${st==='SHIPPED'?'selected':''}>🚚 Shipped</option><option value="DELIVERED" ${st==='DELIVERED'?'selected':''}>✅ Delivered</option><option value="CANCELLED" ${st==='CANCELLED'?'selected':''}>❌ Cancelled</option></select>`;
+
+                let timeline = `<div class="small" style="font-size: 0.75rem; color: var(--text-muted); max-width: 180px;">`;
+                if(o.orderDate) timeline += `<div class="mb-1"><i class="bi bi-cart text-white me-1"></i> Ord: <span class="text-white">${o.orderDate}</span></div>`;
+                if(o.shippedDate) timeline += `<div class="mb-1"><i class="bi bi-truck text-info me-1"></i> Shp: <span class="text-info">${o.shippedDate}</span></div>`;
+                if(o.deliveredDate) timeline += `<div class="mb-1"><i class="bi bi-check-circle text-success me-1"></i> Del: <span class="text-success">${o.deliveredDate}</span></div>`;
+                if(o.canceledDate) timeline += `<div class="mb-1"><i class="bi bi-x-circle text-danger me-1"></i> Can: <span class="text-danger">${o.canceledDate}</span></div>`;
+                timeline += `</div>`;
+
+                tb.innerHTML += `<tr><td class="fw-bold" style="color: var(--text-muted);">#ORD-${o.id}</td><td><div class="fw-bold text-white"><i class="bi bi-person-circle" style="color:var(--primary);"></i> ${o.userEmail}</div></td><td><span title="${items[0].name}">${sum}</span></td><td>${timeline}</td><td class="fw-bold fs-5 text-white">₹${o.totalAmount.toLocaleString('en-IN')}</td><td>${badge}</td><td class="text-end pe-4">${action}</td></tr>`;
+            });
+        });
+    }
+    function updateOrderStatus(id, status) { fetch(`http://localhost:8080/api/orders/${id}/status?status=${status}`, { method: 'PUT' }).then(res => { if(res.ok) { document.getElementById('toastMessage').innerHTML = `<i class="bi bi-check-circle-fill me-2" style="color:var(--primary);"></i> Status Updated!`; statusToast.show(); loadOrders(); } }); }
+    loadOrders();
+</script>
+<script src="scroll-animations.js" defer></script>
+
+<script>
+    // ===== REAL-TIME SYNC (SSE) for Admin =====
+    (function() {
+        const evtSource = new EventSource('http://localhost:8080/api/events');
+        // New order placed by user → auto refresh order list
+        evtSource.addEventListener('order-new', function(e) {
+            const data = JSON.parse(e.data);
+            document.getElementById('toastMessage').innerHTML = `<i class="bi bi-bag-check-fill me-2" style="color:#facc15;"></i> New Order #${data.id} from <strong>${data.email}</strong>`;
+            statusToast.show();
+            loadOrders();
+        });
+        // Order status changed (by another admin tab perhaps)
+        evtSource.addEventListener('order-status-changed', function() {
+            loadOrders();
+        });
+        evtSource.onerror = function() {};
+    })();
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - S/S GearZone</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .top-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .brand-logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+
+        .checkout-container { max-width: 1200px; margin: 40px auto; }
+        .checkout-card { background: var(--surface); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+
+        .form-control { background: var(--border-color); border: 1px solid var(--border-color); color: white; padding: 12px 20px; border-radius: 12px; }
+        .form-control:focus { background: #2a2f40; border-color: var(--primary); color: white; box-shadow: 0 0 0 3px rgba(255, 109, 57, 0.2); }
+        .form-label { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;}
+
+        /* --- SAVED ADDRESS CARDS --- */
+        .address-card { background: var(--border-color); border: 2px solid var(--border-color); border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.3s; position: relative; height: 100%;}
+        .address-card:hover { border-color: var(--primary); background: #2a2f40; }
+        .address-card.selected { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
+        .address-card.selected::after { content: '\F26A'; font-family: bootstrap-icons; position: absolute; top: 10px; right: 15px; color: #4ade80; font-size: 1.5rem; }
+        .addr-name { font-size: 1.1rem; font-weight: 900; color: var(--text-main); margin-bottom: 5px; }
+        .addr-text { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; }
+
+        .btn-gaming { background: var(--primary); color: white; border: none; font-weight: 900; padding: 15px; border-radius: 12px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; width: 100%; box-shadow: 0 5px 15px rgba(255,109,57,0.2);}
+        .btn-gaming:hover { background: #e85b28; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 104, 3, 0.4); color: white;}
+
+        .order-summary-item { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; color: var(--text-muted); }
+        .total-row { border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px; font-size: 1.3rem; font-weight: 900; color: white; }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<header class="top-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <a href="cart.html" class="btn btn-outline-light rounded-pill px-4 fw-bold"><i class="bi bi-arrow-left me-2"></i>Back to Cart</a>
+</header>
+
+<div class="checkout-container container">
+    <div class="row g-5">
+
+        <div class="col-lg-7">
+            <h3 class="fw-black text-white mb-4" style="font-weight: 900;"><i class="bi bi-geo-alt-fill me-2" style="color: var(--primary);"></i>SHIPPING DETAILS</h3>
+
+            <div id="savedAddressesSection" class="checkout-card mb-4" style="display: none;">
+                <h5 class="text-white fw-bold mb-3">Select a Drop Zone</h5>
+                <div class="row g-3" id="savedAddressesList">
+                </div>
+                <button class="btn btn-outline-light mt-4 rounded-pill px-4 fw-bold" onclick="showNewAddressForm()"><i class="bi bi-plus-lg me-2"></i> Add New Address</button>
+            </div>
+
+            <div id="newAddressFormSection" class="checkout-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="text-white fw-bold m-0" id="newAddressTitle">Enter New Address</h5>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold" id="btnCancelNewAddr" style="display: none;" onclick="hideNewAddressForm()"><i class="bi bi-x-lg me-1"></i> Cancel</button>
+                </div>
+
+                <form id="addressForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fname" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Street Address / Flat No.</label>
+                            <input type="text" class="form-control" id="street" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Pincode</label>
+                            <input type="text" class="form-control" id="pincode" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="checkout-card">
+                <h4 class="fw-bold text-white mb-4"><i class="bi bi-receipt me-2" style="color: var(--primary);"></i>ORDER SUMMARY</h4>
+
+                <div id="checkoutItemsList" class="mb-4" style="border-bottom: 1px solid var(--border-color); padding-bottom: 15px; max-height: 300px; overflow-y: auto;">
+                </div>
+
+                <div class="order-summary-item"><span>Subtotal</span> <span id="chkSubtotal">₹0.00</span></div>
+                <div class="order-summary-item text-success" id="chkDiscountRow" style="display:none;"><span>Promo Discount</span> <span id="chkDiscount">- ₹0.00</span></div>
+                <div class="order-summary-item"><span>Taxes (GST 18%)</span> <span id="chkTax">₹0.00</span></div>
+                <div class="order-summary-item"><span>Shipping</span> <span class="text-success fw-bold">FREE</span></div>
+
+                <div class="order-summary-item total-row"><span>Total Payable</span> <span id="chkTotal" style="color: #4ade80;">₹0.00</span></div>
+
+                <div class="mt-4 p-3 rounded-3" style="background: rgba(255, 104, 3, 0.1); border: 1px solid rgba(255, 109, 57, 0.3);">
+                    <div class="fw-bold text-white mb-2"><i class="bi bi-wallet2 me-2" style="color: var(--primary);"></i>Payment Method</div>
+                    <div class="text-success fw-bold fs-6"><i class="bi bi-check-circle-fill me-1"></i> Cash on Delivery (COD)</div>
+                </div>
+
+                <button class="btn-gaming mt-4" id="btnPlaceOrder" onclick="processOrder()">Confirm & Drop Gear <i class="bi bi-check-circle-fill ms-2"></i></button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let cart = [];
+    let finalPayableAmount = 0;
+    let userEmail = localStorage.getItem("userEmail");
+    let selectedAddressString = null;
+
+    window.onload = function() {
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "login.html";
+            return;
+        }
+
+        loadOrderSummary();
+        loadSavedAddresses();
+    };
+
+    // ================= 1. LOAD ORDER SUMMARY =================
+    function loadOrderSummary() {
+        cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) { window.location.href = "index.html"; return; }
+
+        let subtotal = 0;
+        const listDiv = document.getElementById('checkoutItemsList');
+        listDiv.innerHTML = '';
+
+        cart.forEach(item => {
+            let itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
+            listDiv.innerHTML += `
+                <div class="d-flex justify-content-between align-items-center mb-3 pe-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="${item.image}" style="width: 50px; height: 50px; object-fit: contain; background: var(--border-color); border-radius: 8px; padding: 2px;">
+                        <div>
+                            <div class="text-white fw-bold" style="font-size: 0.9rem;">${item.name}</div>
+                            <div class="small text-muted">Qty: ${item.quantity}</div>
+                        </div>
+                    </div>
+                    <div class="fw-bold text-white">₹${itemTotal.toFixed(2)}</div>
+                </div>`;
+        });
+
+        document.getElementById('chkSubtotal').innerText = "₹" + subtotal.toFixed(2);
+
+        let discountAmt = parseFloat(localStorage.getItem('appliedDiscount')) || 0;
+        if (discountAmt > 0) {
+            document.getElementById('chkDiscountRow').style.display = "flex";
+            document.getElementById('chkDiscount').innerText = "- ₹" + discountAmt.toFixed(2);
+        }
+
+        let afterDiscount = subtotal - discountAmt;
+        let tax = afterDiscount * 0.18;
+        document.getElementById('chkTax').innerText = "₹" + tax.toFixed(2);
+
+        finalPayableAmount = afterDiscount + tax;
+        document.getElementById('chkTotal').innerText = "₹" + finalPayableAmount.toFixed(2);
+    }
+
+    // ================= 2. ADDRESS MANAGEMENT LOGIC =================
+    function loadSavedAddresses() {
+        let savedAddresses = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+        let defaultAddr = localStorage.getItem('default_address_' + userEmail);
+
+        if (savedAddresses.length > 0) {
+            document.getElementById('savedAddressesSection').style.display = 'block';
+            document.getElementById('newAddressFormSection').style.display = 'none';
+            document.getElementById('btnCancelNewAddr').style.display = 'block';
+
+            const listDiv = document.getElementById('savedAddressesList');
+            listDiv.innerHTML = '';
+
+            savedAddresses.forEach((addr, index) => {
+                // If this is the default address in profile, auto-select it.
+                // If there is no default address yet, auto-select the first one.
+                let isSelected = (defaultAddr === addr.fullString) || (!defaultAddr && index === 0) ? 'selected' : '';
+
+                if (isSelected === 'selected') {
+                    selectedAddressString = addr.fullString;
+                }
+
+                listDiv.innerHTML += `
+                    <div class="col-md-6">
+                        <div class="address-card ${isSelected}" onclick="selectAddress(this, '${addr.fullString}')">
+                            <div class="addr-name">${addr.name}</div>
+                            <div class="addr-text">
+                                ${addr.street}, ${addr.city} - ${addr.pin}<br>
+                                Phone: ${addr.phone}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    function selectAddress(element, addrString) {
+        document.querySelectorAll('.address-card').forEach(card => card.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedAddressString = addrString;
+    }
+
+    function showNewAddressForm() {
+        document.getElementById('savedAddressesSection').style.display = 'none';
+        document.getElementById('newAddressFormSection').style.display = 'block';
+        selectedAddressString = null;
+    }
+
+    function hideNewAddressForm() {
+        document.getElementById('savedAddressesSection').style.display = 'block';
+        document.getElementById('newAddressFormSection').style.display = 'none';
+
+        // Auto select the default card again when returning
+        const cards = document.querySelectorAll('.address-card');
+        let defaultAddr = localStorage.getItem('default_address_' + userEmail);
+
+        if(cards.length > 0) {
+            let found = false;
+            // Trying to re-select the default one
+            cards.forEach(card => {
+                if(card.getAttribute('onclick').includes(defaultAddr)) {
+                    card.click();
+                    found = true;
+                }
+            });
+            // Fallback to first if default not found
+            if(!found) cards[0].click();
+        }
+    }
+
+    // ================= 3. FINAL PROCESS ORDER =================
+    function processOrder() {
+        let finalAddressString = "";
+
+        if (selectedAddressString != null && document.getElementById('newAddressFormSection').style.display === 'none') {
+            finalAddressString = selectedAddressString;
+        } else {
+            let name = document.getElementById('fname').value.trim();
+            let phone = document.getElementById('phone').value.trim();
+            let street = document.getElementById('street').value.trim();
+            let city = document.getElementById('city').value.trim();
+            let pin = document.getElementById('pincode').value.trim();
+
+            if (!name || !phone || !street || !city || !pin) {
+                alert("Please fill all address details!");
+                return;
+            }
+
+            finalAddressString = `${name}, Ph: ${phone} - ${street}, ${city}, ${pin}`;
+
+            // Save this new address to LocalStorage
+            let savedAddresses = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+            savedAddresses.unshift({
+                name: name,
+                phone: phone,
+                street: street,
+                city: city,
+                pin: pin,
+                fullString: finalAddressString
+            });
+            localStorage.setItem('user_addresses_' + userEmail, JSON.stringify(savedAddresses));
+
+            // Make this new address the DEFAULT for the user globally
+            localStorage.setItem('default_address_' + userEmail, finalAddressString);
+        }
+
+        const btn = document.getElementById('btnPlaceOrder');
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Processing Drop...`;
+        btn.disabled = true;
+
+        const orderData = {
+            userEmail: userEmail,
+            address: finalAddressString,
+            totalAmount: finalPayableAmount,
+            cartItems: JSON.stringify(cart)
+        };
+
+        fetch('http://localhost:8080/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+        .then(res => {
+            if (res.ok) {
+                let usedCode = localStorage.getItem('appliedPromoCode');
+                if (usedCode) {
+                    localStorage.setItem(`used_promo_${userEmail}_${usedCode}`, "true");
+                }
+
+                localStorage.removeItem('cart');
+                localStorage.removeItem('appliedDiscount');
+                localStorage.removeItem('taxAmount');
+                localStorage.removeItem('appliedPromoCode');
+
+                window.location.href = "order-success.html";
+            } else {
+                alert("Mission failed. Ensure backend server is running.");
+                btn.innerHTML = `Confirm & Drop Gear <i class="bi bi-check-circle-fill ms-2"></i>`;
+                btn.disabled = false;
+            }
+        })
+        .catch(err => {
+            alert("Server Error! " + err.message);
+            btn.innerHTML = `Confirm & Drop Gear <i class="bi bi-check-circle-fill ms-2"></i>`;
+            btn.disabled = false;
+        });
+    }
+</script>
+<script src="scroll-animations.js" defer></script>
+
+</html>
+

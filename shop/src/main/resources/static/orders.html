@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - S.S GearZone</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* ================= DARK THEME (MAIN PAGE) ================= */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .top-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; }
+        .brand-logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+
+        .btn-back { color: var(--text-muted); text-decoration: none; font-weight: 800; font-size: 1rem; transition: 0.2s;}
+        .btn-back:hover { color: var(--primary); }
+
+        .tracking-container { max-width: 1100px; margin: 40px auto; padding: 0 15px;}
+        .order-title { font-size: 2rem; font-weight: 900; color: var(--text-main); display: flex; align-items: center;}
+        .order-id-highlight { color: var(--primary); margin-left: 10px;}
+
+        /* Tracking Boxes */
+        .track-box { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; flex: 1; display: flex; align-items: center; gap: 15px; opacity: 0.5; transition: 0.3s;}
+        .track-box.active-green { opacity: 1; background: rgba(74, 222, 128, 0.05); border-color: rgba(74, 222, 128, 0.3); }
+        .track-box.active-orange { opacity: 1; background: rgba(255, 104, 3, 0.05); border-color: var(--primary); box-shadow: 0 0 15px rgba(255, 109, 57, 0.2);}
+
+        .icon-wrapper { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: var(--border-color); color: var(--text-muted);}
+        .active-green .icon-wrapper { background: #4ade80; color: var(--bg-color); }
+        .active-orange .icon-wrapper { background: var(--primary); color: var(--text-main); box-shadow: 0 0 15px rgba(255,109,57,0.5);}
+        .track-text { font-weight: 800; font-size: 1.1rem; color: var(--text-muted);}
+        .active-green .track-text { color: #4ade80; }
+        .active-orange .track-text { color: var(--text-main); }
+
+        /* Information Cards */
+        .info-card { background: var(--surface); border-radius: 12px; padding: 25px; border: 1px solid var(--border-color); margin-bottom: 20px;}
+        .card-heading { font-size: 0.85rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;}
+
+        .item-row { padding: 20px 0; border-bottom: 1px solid var(--border-color); }
+        .item-row:last-child { border-bottom: none; padding-bottom: 0;}
+        .item-img { width: 80px; height: 80px; object-fit: contain; background: var(--bg-color); border-radius: 8px; padding: 5px; border: 1px solid var(--border-color);}
+
+        /* Timeline Log */
+        .log-item { position: relative; padding-left: 20px; margin-bottom: 20px; border-left: 2px solid var(--border-color); }
+        .log-item::before { content: ''; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted); }
+        .log-item.active-danger::before { background: #f87171; box-shadow: 0 0 10px #f87171; }
+        .log-item.active-warning::before { background: #facc15; box-shadow: 0 0 10px #facc15; }
+        .log-item.active-success::before { background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+        .log-date { font-size: 0.75rem; color: var(--text-muted); font-weight: 800; margin-bottom: 3px; display: flex; justify-content: space-between;}
+        .log-msg { color: var(--text-muted); font-weight: 700; font-size: 0.95rem; }
+
+        .btn-abort { background: rgba(248, 113, 113, 0.1); border: 1px solid #f87171; color: #f87171; font-weight: 800; padding: 8px 20px; border-radius: 8px; transition: 0.3s;}
+        .btn-abort:hover { background: #f87171; color: white; }
+
+        .star-rating { color: #facc15; font-size: 0.9rem; }
+        .text-silver { color: var(--text-muted) !important; }
+
+        /* ================= INVOICE MODAL STYLE (WHITE THEME) ================= */
+        #invoicePrintArea { font-family: 'Arial', sans-serif; color: #000; font-size: 0.9rem; }
+        .inv-border-box { border: 1px solid #000; padding: 10px; height: 100%; border-radius: 4px;}
+        .inv-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 15px;}
+        .inv-table th, .inv-table td { border: 1px solid #000; padding: 6px; }
+        .inv-table th { font-weight: bold; background-color: #f8f9fa !important; color: #000;}
+        .inv-text-right { text-align: right; }
+
+        /* ================= PRINT STYLES ================= */
+        @media print {
+            /* Hide EVERYTHING on the page during print */
+            body > *:not(#printOnlyInvoiceWrapper) { display: none !important; }
+
+            /* Show only the invoice wrapper */
+            #printOnlyInvoiceWrapper {
+                display: block !important;
+                position: fixed;
+                top: 0; left: 0;
+                width: 100%;
+                z-index: 99999;
+                background: white;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+                color: #000;
+                font-size: 0.9rem;
+            }
+
+            #printOnlyInvoiceWrapper .inv-border-box { border: 1px solid #000; padding: 10px; }
+            #printOnlyInvoiceWrapper .inv-table { width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 15px; }
+            #printOnlyInvoiceWrapper .inv-table th,
+            #printOnlyInvoiceWrapper .inv-table td { border: 1px solid #000; padding: 6px; }
+            #printOnlyInvoiceWrapper .inv-table th { font-weight: bold; background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            #printOnlyInvoiceWrapper .inv-text-right { text-align: right; }
+            #printOnlyInvoiceWrapper .row { display: flex; }
+            #printOnlyInvoiceWrapper .col-7 { width: 58%; }
+            #printOnlyInvoiceWrapper .col-5 { width: 42%; }
+            #printOnlyInvoiceWrapper .col-8 { width: 65%; }
+            #printOnlyInvoiceWrapper .col-4 { width: 35%; }
+            #printOnlyInvoiceWrapper .col-6 { width: 50%; }
+            #printOnlyInvoiceWrapper .text-center { text-align: center; }
+            #printOnlyInvoiceWrapper .text-decoration-underline { text-decoration: underline; }
+            #printOnlyInvoiceWrapper .border-bottom { border-bottom: 1px solid #000; }
+            #printOnlyInvoiceWrapper .mb-4 { margin-bottom: 1rem; }
+            #printOnlyInvoiceWrapper .mt-2 { margin-top: 0.5rem; }
+            #printOnlyInvoiceWrapper .mt-3 { margin-top: 0.75rem; }
+            #printOnlyInvoiceWrapper .mt-4 { margin-top: 1rem; }
+            #printOnlyInvoiceWrapper .pb-3 { padding-bottom: 0.75rem; }
+            #printOnlyInvoiceWrapper .fw-black,
+            #printOnlyInvoiceWrapper .fw-bold,
+            strong { font-weight: bold; }
+            #printOnlyInvoiceWrapper .mb-0 { margin-bottom: 0; }
+        }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<header class="top-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <div class="d-flex gap-3">
+        <a href="profile.html" class="btn btn-outline-light rounded-pill px-4 fw-bold"><i class="bi bi-person-circle me-2"></i>My Profile</a>
+    </div>
+</header>
+
+<div class="tracking-container">
+    <div class="mb-4"><a href="profile.html" class="btn-back"><i class="bi bi-arrow-left me-2"></i>Back to Profile</a></div>
+    <div id="loader" class="text-center py-5"><div class="spinner-border text-warning"></div><h5 class="mt-3 text-white fw-bold">Fetching Satellite Data...</h5></div>
+
+    <div id="trackingContent" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h1 class="order-title m-0">Order ID: <span class="order-id-highlight" id="displayOrderId">#ORD-0</span></h1>
+            <div class="d-flex gap-2">
+                <button class="btn fw-bold px-4" style="background: var(--border-color); color: white; border-radius: 8px; transition: 0.3s;" data-bs-toggle="modal" data-bs-target="#invoiceModal" onmouseover="this.style.background='white'; this.style.color='black';" onmouseout="this.style.background='var(--border-color)'; this.style.color='white';">
+                    <i class="bi bi-receipt me-2"></i> Invoice
+                </button>
+                <button class="btn-abort" id="btnCancel" onclick="cancelOrderWithReason()"><i class="bi bi-x-circle me-2"></i> Abort</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-3 fw-bold">
+            <div id="mainStatusText" style="color: var(--primary);"><i class="bi bi-circle-fill me-2" style="font-size: 0.6rem;"></i> Processing Drop</div>
+            <div style="color: var(--text-muted);">Tracking No: <span class="text-white" id="trackingNumber">Awaiting Drone</span></div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row gap-3 mb-5">
+            <div class="track-box" id="box-placed"><div class="icon-wrapper"><i class="bi bi-card-checklist"></i></div><div class="track-text">Placed</div></div>
+            <div class="track-box" id="box-packed"><div class="icon-wrapper"><i class="bi bi-box-seam"></i></div><div class="track-text">Packed</div></div>
+            <div class="track-box" id="box-shipped"><div class="icon-wrapper"><i class="bi bi-truck"></i></div><div class="track-text">Shipped</div></div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="info-card">
+                    <div class="card-heading">DROP LOCATION</div>
+                    <div class="fw-bold text-white fs-5" id="displayAddressName"></div>
+                    <div class="text-silver mt-2 lh-lg" style="font-size: 1rem;" id="displayAddressFull"></div>
+                </div>
+
+                <div class="info-card">
+                    <div class="card-heading">SECURED GEAR</div>
+                    <div id="itemsContainer"></div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="info-card">
+                    <div class="card-heading">BILLING SUMMARY</div>
+                    <div id="billingSummaryContainer"></div>
+                </div>
+
+                <div class="info-card h-100">
+                    <div class="card-heading">TRAVEL LOG</div>
+                    <div id="travelLogContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOMMENDATION SECTION -->
+        <div class="container mb-5 pb-5 border-top border-secondary border-opacity-25 pt-5" id="recommendedContainer" style="display:none; animation: slideUpFade 0.6s ease forwards;">
+            <h3 class="fw-bold text-white mb-4"><i class="bi bi-crosshair me-2 text-warning"></i> RECOMMENDED FOR YOU</h3>
+            <div class="row g-4" id="relatedProductsGrid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="invoiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: #ffffff; border-radius: 12px; overflow: hidden;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4 pt-0" id="invoicePrintArea">
+                <div class="text-center border-bottom border-dark pb-3 mb-4">
+                    <h2 class="fw-black mb-0" style="font-weight: 900; letter-spacing: 1px; color:#000;">SS STORE</h2>
+                    <p class="mb-0 fw-bold" style="font-size: 0.85rem; color:#000;">BRANCH: MAIN HEADQUARTERS<br>123 GAMING STREET, CYBER CITY, INDIA 400001 PH: 9876543210</p>
+                    <div class="fw-bold mt-2 text-decoration-underline" style="font-size: 1.2rem; color:#000;">TAX INVOICE</div>
+                </div>
+
+                <div class="row mb-4" style="font-size: 0.85rem;">
+                    <div class="col-6">
+                        <div class="inv-border-box" style="color:#000;">
+                            <strong>CONSIGNEE (SHIP TO) / RECEIVER (BILL TO):-</strong><br>
+                            <span id="invName" style="font-size: 1.1rem; font-weight: bold; display: block; margin-top: 5px;"></span>
+                            <span id="invAddress"></span><br>
+                            <strong>MOBILE:</strong> <span id="invPhone"></span><br>
+                            <strong>EMAIL ID:</strong> <span id="invEmail"></span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="inv-border-box" style="color:#000;">
+                            <table width="100%">
+                                <tr><td width="40%"><strong>ORDER NO:</strong></td><td id="invOrderId"></td></tr>
+                                <tr><td><strong>BILL NO:</strong></td><td id="invBillNo"></td></tr>
+                                <tr><td><strong>DATE:</strong></td><td id="invDate"></td></tr>
+                                <tr><td><strong>GSTIN NO.:</strong></td><td>27SSSTORE9999Z1</td></tr>
+                                <tr><td><strong>SALES MAN:</strong></td><td>SYSTEM AUTO</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="inv-table" style="color:#000;">
+                    <thead>
+                    <tr>
+                        <th>SR NO</th>
+                        <th width="35%">PARTICULAR OF ITEM</th>
+                        <th>HSN</th>
+                        <th>QTY</th>
+                        <th>UNIT</th>
+                        <th>RATE</th>
+                        <th>CGST(9%)</th>
+                        <th>SGST(9%)</th>
+                        <th>AMOUNT</th>
+                    </tr>
+                    </thead>
+                    <tbody id="invoiceItems">
+                    </tbody>
+                </table>
+
+                <div class="row" style="color:#000;">
+                    <div class="col-7">
+                        <strong>HSN SUMMARY:</strong>
+                        <table class="inv-table mt-1" style="font-size: 0.8rem; color:#000;">
+                            <thead><tr><th>HSN</th><th>CGST %</th><th>CGST AMT</th><th>SGST %</th><th>SGST AMT</th><th>TOTAL TAX</th></tr></thead>
+                            <tbody id="hsnSummary"></tbody>
+                        </table>
+                    </div>
+                    <div class="col-5">
+                        <table class="inv-table" style="font-weight: bold; color:#000;">
+                            <tr><td class="inv-text-right">SGST AMOUNT</td><td class="inv-text-right" id="invSgstAmt"></td></tr>
+                            <tr><td class="inv-text-right">CGST AMOUNT</td><td class="inv-text-right" id="invCgstAmt"></td></tr>
+                            <tr><td class="inv-text-right">IGST AMOUNT</td><td class="inv-text-right">0.00</td></tr>
+                            <tr><td class="inv-text-right">DISCOUNT</td><td class="inv-text-right" id="invDiscount"></td></tr>
+                            <tr><td class="inv-text-right" style="font-size: 1.1rem;">GRAND TOTAL</td><td class="inv-text-right" style="font-size: 1.1rem;" id="invGrandTotal"></td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-3 mb-4 inv-border-box text-uppercase" style="height: auto; color:#000;">
+                    <strong>RUPEES IN WORDS:</strong> <span id="invWords"></span> ONLY
+                </div>
+
+                <div class="row mt-4" style="font-size: 0.75rem; font-weight: bold; color:#000;">
+                    <div class="col-8">
+                        WARRANTY [X] 1 YEAR<br><br>DECLARATION:<br>
+                        * FOR WARRANTY CLAIM BOX & BILL IS NECESSARY.<br>
+                        * PHYSICAL OR WATER DAMAGE WILL VOID THE WARRANTY.<br>
+                        * GOODS ONCE SOLD WILL NOT BE TAKEN BACK.
+                    </div>
+                    <div class="col-4 text-center">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=SS-STORE-PAID" alt="QR" class="mb-2"><br>
+                        AUTHORIZED SIGNATORY<br>SS STORE<br>
+                        <span style="font-size: 0.6rem; font-weight: normal;">WE DECLARE THAT THIS INVOICE SHOWS THE ACTUAL PRICE OF THE GOODS.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer justify-content-center" style="background: #f8f9fa;">
+                <button type="button" class="btn fw-bold px-4 py-2" style="background: var(--primary); color: white; border-radius: 8px;" onclick="printInvoice()">
+                    <i class="bi bi-printer-fill me-2"></i> Print Invoice
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let currentOrder = null;
+    const userEmail = localStorage.getItem("userEmail");
+
+    window.onload = function() {
+        if (!userEmail) { window.location.href = "login.html"; return; }
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id');
+
+        if (!orderId) { alert("No Mission ID found!"); window.location.href = "profile.html"; return; }
+
+        fetch(`http://localhost:8080/api/orders`)
+            .then(res => res.json())
+            .then(orders => {
+                currentOrder = orders.find(o => o.id == orderId && o.userEmail === userEmail);
+                if (currentOrder) {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('trackingContent').style.display = 'block';
+                    renderTrackingDetails();
+                } else {
+                    document.getElementById('loader').innerHTML = `<h3 class="text-danger fw-bold">ERROR: Unauthorized Access.</h3>`;
+                }
+            })
+            .catch(() => { document.getElementById('loader').innerHTML = `<h3 class="text-danger fw-bold">ERROR: Server connection lost.</h3>`; });
+    };
+
+    // --- SMART TIMESTAMPS GENERATOR ---
+    function getTimestamps(orderId) {
+        let baseDate = new Date();
+        baseDate.setDate(baseDate.getDate() - (orderId % 5));
+        let placed = new Date(baseDate);
+        let packed = new Date(baseDate.getTime() + (12 * 60 * 60 * 1000));
+        let shipped = new Date(packed.getTime() + (24 * 60 * 60 * 1000));
+        let delivered = new Date(shipped.getTime() + (48 * 60 * 60 * 1000));
+        return { placed, packed, shipped, delivered };
+    }
+
+    function formatDT(dateObj) {
+        return `<span>${dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})}</span>
+                <span>${dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true})}</span>`;
+    }
+
+    function getStarsHtml(rating) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(rating)) html += '<i class="bi bi-star-fill"></i> ';
+            else if (i === Math.ceil(rating) && !Number.isInteger(rating)) html += '<i class="bi bi-star-half"></i> ';
+            else html += '<i class="bi bi-star"></i> ';
+        }
+        return html;
+    }
+
+    async function writeReview(productId, productName) {
+        let rating = prompt(`Rate ${productName} (1 to 5 Stars):`, "5");
+        if (rating === null) return;
+        rating = parseFloat(rating);
+        if (isNaN(rating) || rating < 1 || rating > 5) { alert("Invalid rating! Enter between 1 and 5."); return; }
+
+        let comment = prompt("Any comments about the gear? (Optional)");
+
+        let reviewObj = {
+            reviewerName: userEmail,
+            rating: rating,
+            comment: comment || ""
+        };
+
+        try {
+            let res = await fetch(`http://localhost:8080/api/reviews/${productId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reviewObj)
+            });
+            if (res.ok) {
+                alert("Transmission sent! Rating uploaded.");
+                renderTrackingDetails();
+            } else {
+                alert("Failed to submit review.");
+            }
+        } catch(e) {
+            console.error(e);
+            alert("Error submitting review.");
+        }
+    }
+
+    // --- NUMBER TO WORDS (FOR INVOICE) ---
+    function numberToWords(num) {
+        let a = ['','One ','Two ','Three ','Four ', 'Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
+        let b = ['', '', 'Twenty','Thirty','Forty','Fifty', 'Sixty','Seventy','Eighty','Ninety'];
+        if ((num = num.toString()).length > 9) return 'overflow';
+        let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+        if (!n) return; let str = '';
+        str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+        str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+        str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+        str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+        str += (n[5] != 0) ? ((str != '') ? 'And ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+        return str.trim();
+    }
+
+    // --- RENDER EVERYTHING (TRACKING + INVOICE) ---
+    async function renderTrackingDetails() {
+        document.getElementById('displayOrderId').innerText = `#ORD-${currentOrder.id}`;
+        let addressStr = currentOrder.address || "Player, Ph: N/A - Unknown Drop Zone";
+        let addrParts = addressStr.split('-');
+        let namePhone = addrParts[0] ? addrParts[0].split(',') : [];
+        let addrName = namePhone[0] ? namePhone[0].trim() : "Player";
+        let addrPhone = namePhone[1] ? namePhone[1].trim() : "N/A";
+        let addrFull = addrParts.length > 1 ? addrParts.slice(1).join('-').trim() : addressStr;
+
+        document.getElementById('displayAddressName').innerText = addrName + ", " + addrPhone;
+        document.getElementById('displayAddressFull').innerText = addrFull;
+
+        const itemsContainer = document.getElementById('itemsContainer');
+        itemsContainer.innerHTML = '';
+        let items = JSON.parse(currentOrder.cartItems || "[]");
+        let calcSubtotal = 0;
+        let invoiceItemsHtml = '';
+        let totalTaxAmt = 0;
+
+        for (let index = 0; index < items.length; index++) {
+            let i = items[index];
+            let itemTotal = i.price * i.quantity;
+            calcSubtotal += itemTotal;
+
+            // Generate Tracking Item UI
+            let reviews = [];
+            try {
+                let rRes = await fetch(`http://localhost:8080/api/reviews/${i.id}`);
+                if (rRes.ok) reviews = await rRes.json();
+            } catch(e) {}
+
+            let reviewHtml = '';
+            if (reviews.length > 0) {
+                let avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                reviewHtml = `<div class="d-flex align-items-center gap-2 mt-1 mb-2"><span class="star-rating">${getStarsHtml(avg)}</span><span style="color:var(--text-muted); font-size:0.85rem;">${avg.toFixed(1)} (${reviews.length} Ratings)</span></div>`;
+            } else {
+                reviewHtml = `<div class="mt-1 mb-2" style="color: #64748b; font-size: 0.85rem;"><i class="bi bi-info-circle me-1"></i> No ratings yet</div>`;
+            }
+
+            itemsContainer.innerHTML += `
+                <div class="item-row d-flex flex-column flex-md-row gap-4 align-items-md-center">
+                    <img src="${i.image}" class="item-img" alt="${i.name}">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-white fs-5">${i.name}</div>
+                        ${reviewHtml}
+                        <div class="d-flex gap-4 text-silver" style="font-size: 0.9rem;">
+                            <span>Qty: <b class="text-white">${i.quantity}</b></span>
+                            <span>Unit: <b class="text-white">₹${i.price.toFixed(2)}</b></span>
+                        </div>
+                        <button class="btn btn-sm mt-2" style="background: rgba(255, 104, 3, 0.1); color: var(--primary); border: 1px solid var(--primary); border-radius: 6px; font-size: 0.75rem; font-weight: 700;" onclick="writeReview(${i.id}, '${i.name.replace(/'/g, "\\'")}')">
+                            <i class="bi bi-star me-1"></i> Rate Gear
+                        </button>
+                    </div>
+                    <div class="fw-black text-white fs-4 text-md-end mt-2 mt-md-0" style="color: #4ade80 !important; font-weight: 900;">₹${itemTotal.toFixed(2)}</div>
+                </div>
+            `;
+
+            // Generate Invoice Item Row
+            let baseRate = i.price;
+            let cgstAmt = baseRate * 0.09 * i.quantity;
+            totalTaxAmt += cgstAmt;
+            let amount = (baseRate * i.quantity) + (cgstAmt * 2);
+
+            invoiceItemsHtml += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td style="text-align: left;">${i.name.toUpperCase()}</td>
+                    <td>847130</td>
+                    <td>${i.quantity}</td>
+                    <td>PCS</td>
+                    <td class="inv-text-right">${baseRate.toFixed(2)}</td>
+                    <td class="inv-text-right">${cgstAmt.toFixed(2)}</td>
+                    <td class="inv-text-right">${cgstAmt.toFixed(2)}</td>
+                    <td class="inv-text-right">${amount.toFixed(2)}</td>
+                </tr>
+            `;
+        } // Ensure loop is properly closed!
+
+        // Billing Summary
+        let totalPaid = currentOrder.totalAmount;
+        let diff = totalPaid - calcSubtotal;
+        document.getElementById('billingSummaryContainer').innerHTML = `
+            <div class="d-flex justify-content-between mb-2 text-silver"><span>Subtotal:</span> <span>₹${calcSubtotal.toFixed(2)}</span></div>
+            <div class="d-flex justify-content-between mb-2 text-silver"><span>Shipping:</span> <span class="text-success fw-bold">FREE</span></div>
+            <div class="d-flex justify-content-between mb-3 text-silver border-bottom border-secondary border-opacity-25 pb-3"><span>Taxes/Promo:</span> <span style="color:${diff < 0 ? '#4ade80' : 'var(--text-muted)'}">${diff < 0 ? '-₹'+Math.abs(diff).toFixed(2) : '+₹'+diff.toFixed(2)}</span></div>
+            <div class="d-flex justify-content-between fw-bold text-white fs-5 mt-2"><span>Total Paid:</span> <span style="color: #4ade80;">₹${totalPaid.toFixed(2)}</span></div>
+        `;
+
+        // Populate Invoice Modal Data
+        document.getElementById('invName').innerText = addrName;
+        document.getElementById('invPhone').innerText = addrPhone.replace('Ph:', '').trim();
+        document.getElementById('invAddress').innerText = addrFull;
+        document.getElementById('invEmail').innerText = userEmail;
+        document.getElementById('invOrderId').innerText = "ORD-" + currentOrder.id;
+        document.getElementById('invBillNo').innerText = "SS/2026/" + currentOrder.id;
+
+        let ts = getTimestamps(currentOrder.id);
+        document.getElementById('invDate').innerText = currentOrder.orderDate ? currentOrder.orderDate : ts.placed.toLocaleDateString('en-IN').replace(/\//g, '-');
+
+        invoiceItemsHtml += `
+            <tr style="font-weight: bold;">
+                <td colspan="6" class="inv-text-right">TOTAL</td>
+                <td class="inv-text-right">${totalTaxAmt.toFixed(2)}</td>
+                <td class="inv-text-right">${totalTaxAmt.toFixed(2)}</td>
+                <td class="inv-text-right">${(calcSubtotal + (totalTaxAmt*2)).toFixed(2)}</td>
+            </tr>
+        `;
+        document.getElementById('invoiceItems').innerHTML = invoiceItemsHtml;
+
+        let discount = (calcSubtotal + (totalTaxAmt*2)) - totalPaid;
+        if(discount < 0) discount = 0;
+
+        document.getElementById('hsnSummary').innerHTML = `<tr><td>84713010</td><td>9%</td><td>${totalTaxAmt.toFixed(2)}</td><td>9%</td><td>${totalTaxAmt.toFixed(2)}</td><td>${(totalTaxAmt * 2).toFixed(2)}</td></tr>`;
+        document.getElementById('invCgstAmt').innerText = totalTaxAmt.toFixed(2);
+        document.getElementById('invSgstAmt').innerText = totalTaxAmt.toFixed(2);
+        document.getElementById('invDiscount').innerText = discount.toFixed(2);
+        document.getElementById('invGrandTotal').innerText = totalPaid.toFixed(2);
+        document.getElementById('invWords').innerText = numberToWords(Math.round(totalPaid));
+
+
+        // Travel Log & Status Logic
+        let status = currentOrder.status;
+        const logContainer = document.getElementById('travelLogContainer');
+        const btnCancel = document.getElementById('btnCancel');
+        let logsHTML = "";
+
+        let d_placed = currentOrder.orderDate || formatDT(ts.placed);
+        let d_packed = currentOrder.orderDate || formatDT(ts.packed); 
+        let d_shipped = currentOrder.shippedDate || formatDT(ts.shipped);
+        let d_delivered = currentOrder.deliveredDate || formatDT(ts.delivered);
+
+        logsHTML += `<div class="log-item border-success"><div class="log-date">${d_placed}</div><div class="log-msg text-success">Mission Initiated (Order Placed).</div></div>`;
+
+        if (status === "CANCELLED") {
+            document.getElementById('mainStatusText').innerHTML = `<i class="bi bi-x-circle-fill me-2"></i> Mission Aborted`;
+            document.getElementById('mainStatusText').style.color = "#f87171";
+            btnCancel.style.display = "none";
+            let reason = localStorage.getItem('abort_reason_' + currentOrder.id) || "User cancelled request.";
+            let abortTimeStr = currentOrder.canceledDate || localStorage.getItem('abort_time_' + currentOrder.id) || formatDT(new Date());
+            logsHTML += `<div class="log-item active-danger" style="border-color: #f87171;"><div class="log-date">${abortTimeStr}</div><div class="log-msg" style="color:#f87171;">Abort Reason: ${reason}</div></div>`;
+        }
+        else if (status === "PROCESSING") {
+            document.getElementById('mainStatusText').innerHTML = `<i class="bi bi-circle-fill me-2" style="font-size: 0.6rem;"></i> Packing Gear`;
+            document.getElementById('box-placed').classList.add('active-green');
+            document.getElementById('box-packed').classList.add('active-orange');
+            logsHTML += `<div class="log-item active-warning" style="border-color: #facc15;"><div class="log-date">Pending</div><div class="log-msg" style="color:#facc15;">Gear is being packed in the warehouse.</div></div>`;
+        }
+        else if (status === "SHIPPED") {
+            document.getElementById('mainStatusText').innerHTML = `<i class="bi bi-truck me-2"></i> In Transit`;
+            document.getElementById('trackingNumber').innerText = "TRK-SS-" + Math.floor(Math.random() * 999999);
+            document.getElementById('box-placed').classList.add('active-green');
+            document.getElementById('box-packed').classList.add('active-green');
+            document.getElementById('box-shipped').classList.add('active-orange');
+            btnCancel.style.display = "none";
+            logsHTML += `<div class="log-item border-success"><div class="log-date">${d_packed}</div><div class="log-msg text-success">Gear Packed successfully.</div></div>`;
+            logsHTML += `<div class="log-item active-warning" style="border-color: #facc15;"><div class="log-date">${d_shipped}</div><div class="log-msg" style="color:#facc15;">Package left facility. Out for delivery.</div></div>`;
+        }
+        else if (status === "DELIVERED") {
+            document.getElementById('mainStatusText').innerHTML = `<i class="bi bi-check-circle-fill me-2"></i> Gear Delivered`;
+            document.getElementById('mainStatusText').style.color = "#4ade80";
+            document.getElementById('trackingNumber').innerText = "TRK-SS-" + Math.floor(Math.random() * 999999);
+            document.getElementById('box-placed').classList.add('active-green');
+            document.getElementById('box-packed').classList.add('active-green');
+            document.getElementById('box-shipped').classList.add('active-green');
+            btnCancel.style.display = "none";
+            logsHTML += `<div class="log-item border-success"><div class="log-date">${d_packed}</div><div class="log-msg text-success">Gear Packed successfully.</div></div>`;
+            logsHTML += `<div class="log-item border-success"><div class="log-date">${d_shipped}</div><div class="log-msg text-success">Package left facility.</div></div>`;
+            logsHTML += `<div class="log-item active-success" style="border-color:#4ade80;"><div class="log-date">${d_delivered}</div><div class="log-msg text-success">Securely dropped at location!</div></div>`;
+        };
+
+        logContainer.innerHTML = logsHTML;
+        
+        // Fetch recommendations after rendering order details
+        fetchRecommendations();
+    }
+
+    function fetchRecommendations() {
+        fetch('http://localhost:8080/api/products')
+            .then(res => res.json())
+            .then(allProducts => {
+                if (!allProducts || allProducts.length === 0) return;
+                
+                // Shuffle array to recommend random products
+                allProducts.sort(() => 0.5 - Math.random());
+                let topRelated = allProducts.slice(0, 4);
+
+                if(topRelated.length > 0) {
+                    document.getElementById('recommendedContainer').style.display = 'block';
+                    let grid = document.getElementById('relatedProductsGrid');
+                    grid.innerHTML = '';
+                    topRelated.forEach(p => {
+                        let img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/200';
+                        grid.innerHTML += `
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                            <div style="background: #1a1a1a; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px; padding: 20px; transition: 0.3s; cursor: pointer; text-align: center; height: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="window.location.href='product-details.html?id=${p.id}'" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 35px rgba(255,109,57,0.3)'; this.style.borderColor='rgba(255, 104, 3, 0.6)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.5)'; this.style.borderColor='rgba(255, 255, 255, 0.15)';">
+                                <div style="height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                    <img src="${img}" style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));">
+                                </div>
+                                <div style="color: #60a5fa; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${p.category || 'Gear'}</div>
+                                <div style="color: white; font-weight: 800; margin-top: 5px; font-size: 0.95rem; line-height: 1.3;" class="text-truncate">${p.name}</div>
+                                <div style="color: #4ade80; font-size: 1.2rem; font-weight: 900; margin-top: 10px;">₹${p.price}</div>
+                            </div>
+                        </div>`;
+                    });
+                }
+            })
+            .catch(err => console.log("Failed to fetch recommendations", err));
+    }
+
+    function cancelOrderWithReason() {
+        let reason = prompt("State your reason for aborting this mission:");
+        if (reason === null || reason.trim() === "") return;
+
+        if(confirm("Confirm Abort? This action is irreversible.")) {
+            fetch(`http://localhost:8080/api/orders/${currentOrder.id}/cancel`, { method: 'PUT' })
+                .then(res => {
+                    if (res.ok) {
+                        localStorage.setItem('abort_reason_' + currentOrder.id, reason);
+                        localStorage.setItem('abort_time_' + currentOrder.id, new Date().toISOString());
+                        alert("Mission Aborted successfully!");
+                        window.location.reload();
+                    } else { alert("Failed to abort. Gear might be shipped already."); }
+                });
+        }
+    }
+
+    // --- DIRECT PRINT ENGINE (no popup, works in all browsers) ---
+    function printInvoice() {
+        // Get the invoice HTML content from the modal
+        const invoiceContent = document.getElementById('invoicePrintArea').innerHTML;
+
+        // Create (or reuse) a hidden print-only wrapper at body level
+        let wrapper = document.getElementById('printOnlyInvoiceWrapper');
+        if (!wrapper) {
+            wrapper = document.createElement('div');
+            wrapper.id = 'printOnlyInvoiceWrapper';
+            wrapper.style.display = 'none'; // hidden normally, shown only @media print
+            document.body.appendChild(wrapper);
+        }
+
+        // Stamp the invoice content into the wrapper
+        wrapper.innerHTML = invoiceContent;
+
+        // Trigger browser print dialog directly (no popup needed)
+        window.print();
+    }
+</script>
+
+
+
+</body>
+</html>

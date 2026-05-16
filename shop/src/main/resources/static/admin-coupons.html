@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Coupons | S/S GearZone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d3748;
+            border-radius: 4px;
+        }
+
+        .admin-header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 800;
+            color: var(--text-muted);
+            transition: 0.3s;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 104, 3, 0.1);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--text-main);
+            box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3);
+        }
+
+        .main-content {
+            padding: 40px;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard-container {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .table-custom {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            width: 100%;
+            color: var(--text-main);
+        }
+
+        .table-custom thead th {
+            border: none;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+        }
+
+        .table-custom tbody tr {
+            background: var(--border-color);
+            transition: 0.3s;
+        }
+
+        .table-custom tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 109, 57, 0.15);
+            background: #2a2f40;
+        }
+
+        .table-custom tbody td {
+            border: none;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            font-weight: 600;
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        .table-custom tbody td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.02);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+        }
+
+        .table-custom tbody td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.02);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .coupon-badge {
+            border: 2px dashed var(--primary);
+            color: var(--primary);
+            background: rgba(255, 104, 3, 0.1);
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .form-control {
+            background: var(--border-color);
+            border: 1px solid var(--border-color);
+            color: white;
+        }
+
+        .form-control:focus {
+            background: #2a2f40;
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 3px rgba(255, 109, 57, 0.2);
+        }
+
+        .btn-primary-gaming {
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-weight: 800;
+            transition: 0.3s;
+        }
+
+        .btn-primary-gaming:hover {
+            background: #e85b28;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 109, 57, 0.3);
+        }
+
+        /* Action Buttons CSS */
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: 0.2s;
+            margin-left: 5px;
+            background: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #e53e3e;
+            color: white;
+        }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="theme.css">
+
+<body>
+
+    <header class="admin-header">
+        <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+        <ul class="nav-menu">
+            <li><a href="index.html" class="nav-link"><i class="bi bi-shop me-2"></i> Store</a></li>
+            <li><a href="admin-products.html" class="nav-link"><i class="bi bi-tag me-2"></i> Products</a></li>
+            <li><a href="admin-orders.html" class="nav-link"><i class="bi bi-cart me-2"></i> Orders</a></li>
+            <li><a href="admin-users.html" class="nav-link"><i class="bi bi-people me-2"></i> Customers</a></li>
+            <li><a href="admin-coupons.html" class="nav-link active"><i class="bi bi-ticket-perforated me-2"></i>
+                    Coupons</a></li>
+            <li><a href="admin-reports.html" class="nav-link"><i class="bi bi-bar-chart me-2"></i> Analytics</a></li>
+            <li><a href="admin-feedback.html" class="nav-link text-white fw-bold">
+                    <i class="bi bi-chat-left-dots me-2"></i> Feedback Reports
+                </a></li>
+        </ul>
+        <a href="login.html" class="btn btn-outline-danger fw-bold rounded-pill px-4" onclick="localStorage.clear();"><i
+                class="bi bi-box-arrow-left me-2"></i> Sign Out</a>
+    </header>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h2 class="fw-extrabold m-0 text-white" style="font-weight: 900; letter-spacing: 1px;">PROMOS</h2>
+                <p class="small m-0 mt-1" style="color: var(--text-muted);">Manage codes and discounts</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="dashboard-container mt-0">
+                    <h5 class="fw-bold mb-4" id="formTitle" style="color:var(--primary);"><i
+                            class="bi bi-plus-circle-dotted me-2"></i> Create Coupon</h5>
+                    <form id="couponForm">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-uppercase mb-1" style="color: var(--text-muted);">Code *</label>
+                            <input type="text"
+                                class="form-control form-control-lg rounded-3 fs-6 text-uppercase fw-bold text-white"
+                                id="code" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="small fw-bold text-uppercase mb-1" style="color: var(--text-muted);">Discount (%)
+                                *</label>
+                            <input type="number" step="0.1"
+                                class="form-control form-control-lg rounded-3 fs-6 text-white" id="discount" required>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary-gaming rounded-pill w-100 py-2 fw-bold"
+                                id="saveBtn">Save Coupon</button>
+                            <button type="button" class="btn btn-outline-light rounded-pill w-100 py-2 fw-bold"
+                                id="cancelEditBtn" style="display:none;" onclick="cancelEdit()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="dashboard-container mt-0">
+                    <h5 class="fw-bold mb-4 text-white">Active Codes</h5>
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="couponTableBody">
+                                <tr>
+                                    <td colspan="4" class="text-center py-4" style="color: var(--text-muted);">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem("role") !== "ADMIN") window.location.href = "login.html";
+
+        let editingCouponId = null;
+
+        function loadCoupons() {
+            fetch('http://localhost:8080/api/coupons').then(res => res.json()).then(coupons => {
+                const tb = document.getElementById('couponTableBody'); tb.innerHTML = '';
+                if (coupons.length === 0) return tb.innerHTML = `<tr><td colspan="4" class="text-center py-5" style="color: var(--text-muted);">No codes yet.</td></tr>`;
+
+                coupons.forEach(c => {
+                    let status = c.active ? `<span class="badge" style="background: rgba(74, 222, 128, 0.1); color: #4ade80; cursor:pointer;" onclick="toggleCoupon(${c.id})" title="Click to Disable">Active</span>` : `<span class="badge" style="background: rgba(248, 113, 113, 0.1); color: #f87171; cursor:pointer;" onclick="toggleCoupon(${c.id})" title="Click to Enable">Disabled</span>`;
+
+                    let actions = `
+                    <button class="btn-action btn-edit" title="Edit" onclick="editCoupon(${c.id}, '${c.code}', ${c.discountPercent})"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn-action btn-delete" title="Delete" onclick="deleteCoupon(${c.id})"><i class="bi bi-trash3"></i></button>
+                `;
+
+                    tb.innerHTML += `<tr><td><span class="coupon-badge">${c.code}</span></td><td class="fw-bold fs-5 text-white">${c.discountPercent}% OFF</td><td>${status}</td><td class="text-end pe-4">${actions}</td></tr>`;
+                });
+            });
+        }
+
+        // CREATE OR UPDATE LOGIC
+        document.getElementById('couponForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const d = {
+                code: document.getElementById('code').value.toUpperCase(),
+                discountPercent: parseFloat(document.getElementById('discount').value)
+            };
+
+            let apiUrl = editingCouponId ? `http://localhost:8080/api/coupons/${editingCouponId}` : 'http://localhost:8080/api/coupons';
+            let methodType = editingCouponId ? 'PUT' : 'POST';
+
+            fetch(apiUrl, { method: methodType, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) })
+                .then(res => {
+                    if (res.ok) {
+                        cancelEdit();
+                        loadCoupons();
+                    } else {
+                        alert("Error! Code might already exist.");
+                    }
+                });
+        });
+
+        // EDIT BUTTON CLICKED
+        function editCoupon(id, code, discount) {
+            editingCouponId = id;
+            document.getElementById('code').value = code;
+            document.getElementById('discount').value = discount;
+
+            document.getElementById('formTitle').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Update Coupon';
+            document.getElementById('saveBtn').innerText = 'Update';
+            document.getElementById('cancelEditBtn').style.display = 'block';
+        }
+
+        // CANCEL EDIT
+        function cancelEdit() {
+            editingCouponId = null;
+            document.getElementById('couponForm').reset();
+            document.getElementById('formTitle').innerHTML = '<i class="bi bi-plus-circle-dotted me-2"></i> Create Coupon';
+            document.getElementById('saveBtn').innerText = 'Save Coupon';
+            document.getElementById('cancelEditBtn').style.display = 'none';
+        }
+
+        // DELETE COUPON
+        function deleteCoupon(id) {
+            if (confirm("Are you sure you want to delete this coupon? This action cannot be undone.")) {
+                fetch(`http://localhost:8080/api/coupons/${id}`, { method: 'DELETE' })
+                    .then(res => {
+                        if (res.ok) {
+                            if (editingCouponId === id) cancelEdit();
+                            loadCoupons();
+                        }
+                    });
+            }
+        }
+
+        // TOGGLE ACTIVE/DISABLE
+        function toggleCoupon(id) {
+            fetch(`http://localhost:8080/api/coupons/${id}/toggle`, { method: 'PUT' })
+                .then(res => { if (res.ok) loadCoupons(); });
+        }
+
+        loadCoupons();
+    </script>
+    <script src="scroll-animations.js" defer></script>
+
+</html>

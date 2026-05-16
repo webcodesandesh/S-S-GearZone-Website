@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - S.S GearZone</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .top-header { background: var(--surface); border-bottom: 1px solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top:0; z-index: 100;}
+        .brand-logo { font-size: 1.8rem; font-weight: 900; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+
+        .profile-container { max-width: 1200px; margin: 40px auto; }
+        .card-custom { background: var(--surface); border-radius: 20px; padding: 30px; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.5); height: 100%;}
+
+        /* Profile Sidebar */
+        .avatar-wrapper { position: relative; width: 120px; height: 120px; margin: 0 auto 20px; cursor: pointer; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--primary); padding: 3px; background: var(--border-color); transition: 0.3s;}
+        .avatar-wrapper:hover .avatar-img { filter: brightness(0.7); }
+        .avatar-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 1.5rem; opacity: 0; transition: 0.3s; pointer-events: none;}
+        .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+
+        .profile-name { font-size: 1.5rem; font-weight: 900; color: var(--text-main); margin-bottom: 5px; text-align: center;}
+        .profile-email { color: var(--text-muted); font-weight: 600; text-align: center; margin-bottom: 30px; font-size: 0.9rem;}
+
+        .nav-pills-custom .nav-link { color: var(--text-muted); font-weight: 800; border-radius: 12px; padding: 12px 20px; margin-bottom: 10px; transition: 0.3s; text-align: left; background: transparent; border: 1px solid transparent;}
+        .nav-pills-custom .nav-link:hover { background: var(--border-color); color: var(--text-main);}
+        .nav-pills-custom .nav-link.active { background: rgba(255, 104, 3, 0.1); color: var(--primary); border-color: rgba(255, 109, 57, 0.3); }
+
+        .tab-content-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title { font-weight: 900; color: var(--text-main); margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+
+        /* ================= AMAZON STYLE ORDER CARDS ================= */
+        .amz-order-card { background: var(--surface); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);}
+        .amz-order-header { background: var(--border-color); padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; font-size: 0.85rem; color: var(--text-muted); }
+        .amz-header-block { display: flex; flex-direction: column; gap: 3px; }
+        .amz-header-label { text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; font-size: 0.75rem; color: var(--text-muted);}
+        .amz-header-value { color: var(--text-main); font-weight: 700; }
+        .amz-header-link { color: #60a5fa; text-decoration: none; transition: 0.2s; cursor: pointer; font-weight: 600;}
+        .amz-header-link:hover { color: var(--primary); text-decoration: underline; }
+
+        .amz-order-body { padding: 25px 20px; }
+        .amz-status-text { font-size: 1.2rem; font-weight: 900; margin-bottom: 15px; }
+
+        .amz-item-row { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .amz-item-img-box { width: 100px; height: 100px; flex-shrink: 0; background: var(--bg-color); border-radius: 8px; padding: 5px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);}
+        .amz-item-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .amz-item-details { flex-grow: 1; min-width: 250px; max-width: 500px;}
+        .amz-item-title { color: #60a5fa; font-weight: 800; font-size: 1rem; margin-bottom: 5px; cursor: pointer; transition: 0.2s; line-height: 1.4;}
+        .amz-item-title:hover { color: var(--primary); text-decoration: underline; }
+        .amz-item-return { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 600;}
+
+        .amz-btn-group-horizontal { display: flex; gap: 10px; flex-wrap: wrap; }
+        .amz-btn-primary { background: rgba(250, 204, 21, 0.1); border: 1px solid #facc15; color: #facc15; padding: 8px 20px; border-radius: 8px; font-weight: 800; font-size: 0.85rem; transition: 0.3s; display: flex; align-items: center; gap: 5px; cursor: pointer;}
+        .amz-btn-primary:hover { background: #facc15; color: var(--bg-color); }
+        .amz-btn-secondary { background: var(--border-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 20px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; transition: 0.3s; cursor: pointer;}
+        .amz-btn-secondary:hover { background: #2a2f40; border-color: var(--text-muted); }
+
+        .amz-action-column { width: 250px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+        .amz-action-btn { background: var(--border-color); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; width: 100%; text-align: center; transition: 0.3s; cursor: pointer;}
+        .amz-action-btn:hover { background: #2a2f40; border-color: var(--text-muted); }
+        .amz-action-btn-highlight { background: rgba(255, 104, 3, 0.1); color: var(--primary); border-color: var(--primary); }
+        .amz-action-btn-highlight:hover { background: rgba(255, 109, 57, 0.2); }
+
+        /* Address & Forms */
+        .list-item-card { background: var(--border-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; transition: 0.3s; cursor: pointer; position: relative; }
+        .form-control { background: var(--border-color); border: 1px solid var(--border-color); color: var(--text-main) !important; padding: 12px 20px; border-radius: 12px; font-weight: 600;}
+        .form-control::placeholder { color: #64748b; font-weight: 500; }
+        .form-control:focus { background: #2a2f40; border-color: var(--primary); color: var(--text-main); box-shadow: 0 0 0 3px rgba(255, 109, 57, 0.2); }
+        .form-label { font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;}
+        .text-silver { color: var(--text-muted) !important; }
+        .btn-gaming { background: var(--primary); color: white; border: none; font-weight: 900; padding: 12px 30px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;}
+        .btn-gaming:hover { background: #e85b28; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 104, 3, 0.4); color: white;}
+
+        /* Password Field Wrapper */
+        .pass-wrapper { position: relative; }
+        .pass-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; z-index: 10; font-size: 1.2rem; }
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<header class="top-header">
+    <a class="brand-logo" href="index.html"><i class="bi bi-controller"></i> SS STORE</a>
+    <a href="index.html" class="btn btn-outline-light rounded-pill px-4 fw-bold"><i class="bi bi-house-door me-2"></i>Back to Home</a>
+</header>
+
+<div class="profile-container container">
+    <div class="row g-4">
+
+        <div class="col-lg-3">
+            <div class="card-custom">
+                <div class="avatar-wrapper" onclick="document.getElementById('profilePicInput').click()">
+                    <img src="https://via.placeholder.com/150?text=Gamer" id="profileImagePreview" class="avatar-img" alt="Profile Picture">
+                    <div class="avatar-overlay"><i class="bi bi-camera-fill"></i></div>
+                    <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="handleProfilePicUpload(event)">
+                </div>
+
+                <div class="profile-name" id="displayUserName">Loading...</div>
+                <div class="profile-email" id="displayUserEmail">loading@ssstore.com</div>
+
+                <div class="nav flex-column nav-pills-custom mt-4">
+                    <button class="nav-link active" onclick="switchTab('orders', this)"><i class="bi bi-box-seam me-3"></i> Your Orders</button>
+                    <button class="nav-link" onclick="switchTab('address', this)"><i class="bi bi-geo-alt me-3"></i> Saved Addresses</button>
+                    <button class="nav-link" onclick="switchTab('security', this)"><i class="bi bi-shield-lock me-3"></i> Security</button>
+                    <button class="nav-link" onclick="switchTab('feedback', this)"><i class="bi bi-chat-square-text me-3"></i> Feedback</button>
+                    <button class="nav-link text-danger border-danger mt-4" style="border: 1px dashed;" onclick="logout()"><i class="bi bi-box-arrow-left me-3"></i> Log Out</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card-custom min-vh-50" style="padding: 20px;">
+
+                <div id="ordersTab" class="tab-content-section active">
+                    <h4 class="section-title ps-2"><i class="bi bi-box-seam me-2" style="color:var(--primary);"></i> YOUR ORDERS</h4>
+                    <div id="ordersContainer">
+                        <div class="text-center py-5 text-silver"><div class="spinner-border"></div></div>
+                    </div>
+                </div>
+
+                <div id="addressTab" class="tab-content-section p-3">
+                    <h4 class="section-title"><i class="bi bi-geo-alt me-2" style="color:var(--primary);"></i> DROP ZONES (ADDRESSES)</h4>
+                    <div class="mb-4 text-end">
+                        <button class="btn btn-outline-light rounded-pill px-4 fw-bold" onclick="toggleProfileAddressForm()">
+                            <i class="bi bi-plus-lg me-2"></i> Add New Address
+                        </button>
+                    </div>
+
+                    <div id="profileNewAddrForm" style="display: none; background: var(--border-color); border: 1px solid var(--primary); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h6 class="fw-bold text-white mb-3">ENTER NEW DROP ZONE</h6>
+                        <form onsubmit="saveProfileAddress(event)">
+                            <div class="row g-3">
+                                <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" id="p_fname" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Phone Number</label><input type="tel" id="p_phone" class="form-control" required></div>
+                                <div class="col-12"><label class="form-label">Street Address / Flat No.</label><input type="text" id="p_street" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">City</label><input type="text" id="p_city" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Pincode</label><input type="text" id="p_pincode" class="form-control" required></div>
+                                <div class="col-12 text-end mt-3">
+                                    <button type="button" class="btn btn-sm btn-secondary px-3 me-2" onclick="toggleProfileAddressForm()">Cancel</button>
+                                    <button type="submit" class="btn-gaming px-4 py-2" style="font-size:0.9rem;">Save Address</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row g-3" id="addressContainer"></div>
+                </div>
+
+                <div id="securityTab" class="tab-content-section p-3">
+                    <h4 class="section-title"><i class="bi bi-shield-lock me-2" style="color:var(--primary);"></i> CHANGE PASSWORD</h4>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form onsubmit="changePassword(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Password</label>
+                                    <div class="pass-wrapper">
+                                        <input type="password" class="form-control" required id="currPass">
+                                        <i class="bi bi-eye pass-toggle" onclick="togglePassVisibility('currPass', this)"></i>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">New Password</label>
+                                    <div class="pass-wrapper">
+                                        <input type="password" class="form-control" id="newPass" required>
+                                        <i class="bi bi-eye pass-toggle" onclick="togglePassVisibility('newPass', this)"></i>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPass" required>
+                                </div>
+                                <button type="submit" class="btn-gaming">Update Password <i class="bi bi-check-lg ms-1"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="feedbackTab" class="tab-content-section p-3">
+                    <h4 class="section-title"><i class="bi bi-chat-square-text me-2" style="color:var(--primary);"></i> SEND FEEDBACK</h4>
+                    <p class="text-silver mb-4">Report a bug, suggest new gear, or tell us how we can improve.</p>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <form onsubmit="submitFeedback(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Feedback Type</label>
+                                    <select class="form-control" required>
+                                        <option value="" disabled selected>Select Category</option>
+                                        <option value="bug">Report a Bug</option>
+                                        <option value="suggestion">Suggest New Product</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4"><label class="form-label">Message</label><textarea class="form-control" rows="5" required></textarea></div>
+                                <button type="submit" class="btn-gaming">Send Transmission <i class="bi bi-send ms-1"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const userEmail = localStorage.getItem("userEmail");
+    const userName = localStorage.getItem("userName");
+
+    if (!userEmail) window.location.href = "login.html";
+
+    window.onload = function() {
+        document.getElementById('displayUserName').innerText = userName || "Player 1";
+        document.getElementById('displayUserEmail').innerText = userEmail;
+
+        fetch(`http://localhost:8080/api/users/${userEmail}`)
+            .then(res => res.json())
+            .then(user => {
+                if (user && user.profilePic) {
+                    document.getElementById('profileImagePreview').src = user.profilePic;
+                } else {
+                    const savedPic = localStorage.getItem('profile_pic_' + userEmail);
+                    if (savedPic) document.getElementById('profileImagePreview').src = savedPic;
+                }
+            })
+            .catch(err => {
+                const savedPic = localStorage.getItem('profile_pic_' + userEmail);
+                if (savedPic) document.getElementById('profileImagePreview').src = savedPic;
+            });
+
+        syncPastOrdersAddresses();
+        loadUserOrders();
+
+        if (localStorage.getItem('gotoFeedback') === 'true') {
+            localStorage.removeItem('gotoFeedback');
+            setTimeout(() => {
+                const btn = Array.from(document.querySelectorAll('.nav-pills-custom .nav-link')).find(b => b.innerText.includes('Feedback'));
+                if(btn) switchTab('feedback', btn);
+            }, 100);
+        }
+    };
+
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.tab-content-section').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-pills-custom .nav-link').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId + 'Tab').classList.add('active');
+        btnElement.classList.add('active');
+    }
+
+    // ================= WORKING SHOW PASSWORD LOGIC =================
+    function togglePassVisibility(id, icon) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+
+    // ================= PERMANENT DELETE (BLACKLIST) LOGIC =================
+    function syncPastOrdersAddresses() {
+        fetch('http://localhost:8080/api/orders')
+            .then(res => res.json())
+            .then(orders => {
+                let myOrders = orders.filter(o => o.userEmail === userEmail);
+                let savedAddrs = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+                let deletedList = JSON.parse(localStorage.getItem('deleted_addresses_' + userEmail)) || [];
+
+                myOrders.forEach(o => {
+                    let existsInSaved = savedAddrs.find(a => a.fullString === o.address);
+                    let existsInDeleted = deletedList.includes(o.address);
+                    if(!existsInSaved && !existsInDeleted && o.address) {
+                        savedAddrs.push({
+                            name: o.address.split(',')[0].trim() || 'Player',
+                            fullString: o.address
+                        });
+                    }
+                });
+                localStorage.setItem('user_addresses_' + userEmail, JSON.stringify(savedAddrs));
+                if(savedAddrs.length > 0 && !localStorage.getItem('default_address_' + userEmail)) {
+                    localStorage.setItem('default_address_' + userEmail, savedAddrs[0].fullString);
+                }
+                loadUserAddresses();
+            });
+    }
+
+    function deleteAddress(index) {
+        if(!confirm("Delete this drop zone permanently?")) return;
+        let savedAddresses = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+        let deletedAddr = savedAddresses[index].fullString;
+
+        // BLACKLISTING:
+        let deletedList = JSON.parse(localStorage.getItem('deleted_addresses_' + userEmail)) || [];
+        deletedList.push(deletedAddr);
+        localStorage.setItem('deleted_addresses_' + userEmail, JSON.stringify(deletedList));
+
+        savedAddresses.splice(index, 1);
+        localStorage.setItem('user_addresses_' + userEmail, JSON.stringify(savedAddresses));
+
+        if (localStorage.getItem('default_address_' + userEmail) === deletedAddr) {
+            localStorage.removeItem('default_address_' + userEmail);
+            if(savedAddresses.length > 0) localStorage.setItem('default_address_' + userEmail, savedAddresses[0].fullString);
+        }
+        loadUserAddresses();
+    }
+
+    function loadUserAddresses() {
+        const container = document.getElementById('addressContainer');
+        let savedAddresses = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+        let defaultAddr = localStorage.getItem('default_address_' + userEmail);
+        container.innerHTML = '';
+        if (savedAddresses.length === 0) {
+            container.innerHTML = `<div class="col-12 text-center py-4 text-silver">No saved addresses.</div>`;
+            return;
+        }
+        savedAddresses.forEach((addr, index) => {
+            let isDefault = (defaultAddr === addr.fullString);
+            container.innerHTML += `
+                <div class="col-md-6 mb-3">
+                    <div class="list-item-card h-100 ${isDefault ? 'border-success' : ''}" style="${isDefault ? 'background: rgba(74, 222, 128, 0.05); cursor:default;' : ''}">
+                        <div class="fw-bold text-white mb-1">${addr.name}</div>
+                        <div class="text-silver small mb-3">${addr.fullString}</div>
+                        <div class="d-flex gap-2">
+                            ${isDefault ? '<span class="badge bg-success">Default</span>' :
+                            `<button class="btn btn-sm btn-outline-secondary" onclick="setDefaultAddress('${addr.fullString}')">Set Default</button>`}
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAddress(${index})"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function setDefaultAddress(fullString) {
+        localStorage.setItem('default_address_' + userEmail, fullString);
+        loadUserAddresses();
+    }
+
+    function toggleProfileAddressForm() {
+        const form = document.getElementById('profileNewAddrForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function saveProfileAddress(event) {
+        event.preventDefault();
+        let name = document.getElementById('p_fname').value.trim();
+        let phone = document.getElementById('p_phone').value.trim();
+        let street = document.getElementById('p_street').value.trim();
+        let city = document.getElementById('p_city').value.trim();
+        let pin = document.getElementById('p_pincode').value.trim();
+        let full = `${name}, Ph: ${phone} - ${street}, ${city}, ${pin}`;
+        let saved = JSON.parse(localStorage.getItem('user_addresses_' + userEmail)) || [];
+        saved.unshift({ name, fullString: full });
+        localStorage.setItem('user_addresses_' + userEmail, JSON.stringify(saved));
+        if(saved.length === 1) localStorage.setItem('default_address_' + userEmail, full);
+        event.target.reset(); toggleProfileAddressForm(); loadUserAddresses();
+    }
+
+    function loadUserOrders() {
+        const container = document.getElementById('ordersContainer');
+        fetch('http://localhost:8080/api/orders')
+            .then(res => res.json())
+            .then(orders => {
+                let myOrders = orders.filter(o => o.userEmail === userEmail).reverse();
+                container.innerHTML = myOrders.length ? '' : '<p class="text-center py-5">No active missions found.</p>';
+                myOrders.forEach(o => {
+                    let items = JSON.parse(o.cartItems || "[]");
+                    let color = o.status === 'DELIVERED' ? '#4ade80' : (o.status === 'CANCELLED' ? '#f87171' : '#facc15');
+                    
+                    let itemsHtml = '';
+                    items.forEach(item => {
+                        itemsHtml += `
+                        <div class="d-flex gap-3 align-items-center mb-3">
+                            <img src="${item.image}" width="70" height="70" style="object-fit:contain; background:var(--bg-color); border-radius:8px; border:1px solid var(--border-color);">
+                            <div>
+                                <div class="fw-bold fs-6" style="color:var(--text-muted);">${item.name}</div>
+                                <div class="small" style="color:var(--text-muted);">Qty: ${item.quantity}  |  ₹${item.price.toFixed(2)}</div>
+                            </div>
+                        </div>`;
+                    });
+
+                    container.innerHTML += `
+                        <div class="list-item-card mb-4" style="background: var(--surface); border: 1px solid var(--border-color); padding: 0; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                            <div class="d-flex justify-content-between align-items-center" style="background: rgba(255,255,255,0.02); padding: 15px 20px; border-bottom: 1px solid var(--border-color);">
+                                <div>
+                                    <span class="small" style="color:var(--text-muted); font-weight:700;">Mission Code: ORD-${o.id}</span>
+                                    <div class="fw-bold mt-1 fs-5" style="color: var(--text-main);">₹${o.totalAmount.toFixed(2)}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold mb-2" style="color: ${color}; text-transform: uppercase;">${o.status.replace(/_/g, ' ')} <i class="${o.status === 'DELIVERED' ? 'bi bi-check-circle-fill' : ''}"></i></div>
+                                    <button class="btn btn-sm" style="background: rgba(255, 104, 3, 0.1); color: var(--primary); border: 1px solid var(--primary); font-weight:700;" onclick="window.location.href='orders.html?id=${o.id}'">Track Mission <i class="bi bi-chevron-right ms-1"></i></button>
+                                </div>
+                            </div>
+                            <div style="padding: 20px;">
+                                ${itemsHtml}
+                            </div>
+                        </div>`;
+                });
+            });
+    }
+
+    function handleProfilePicUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const base64Str = e.target.result;
+                document.getElementById('profileImagePreview').src = base64Str;
+                localStorage.setItem('profile_pic_' + userEmail, base64Str);
+                
+                // Save permanently to Backend
+                fetch(`http://localhost:8080/api/users/${userEmail}/profile-pic`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ profilePic: base64Str })
+                }).then(res => {
+                    if(res.ok) console.log("Profile picture saved to backend!");
+                }).catch(err => console.error("Could not save to backend", err));
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function changePassword(event) {
+        event.preventDefault();
+        const np = document.getElementById('newPass').value;
+        const cp = document.getElementById('confirmPass').value;
+        if (np !== cp) { alert("Passwords do not match!"); return; }
+        alert("Password updated successfully!");
+        event.target.reset();
+    }
+
+   function submitFeedback(event) {
+    event.preventDefault();
+
+    // Form madhun values ghetlya
+    const type = event.target.querySelector('select').value;
+    const message = event.target.querySelector('textarea').value;
+    const date = new Date().toLocaleString('en-IN');
+
+    const newFeedback = {
+        userName: userName || "Player",
+        userEmail: userEmail,
+        type: type,
+        message: message,
+        date: date
+    };
+
+    fetch('http://localhost:8080/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newFeedback) }).then(res => { if(res.ok) { alert('Transmission sent! Admin notified.'); event.target.reset(); } else { alert('Failed to send feedback.'); } }).catch(err => { console.error('Error sending feedback:', err); alert('Error sending feedback to the server.'); });
+
+
+
+
+
+
+}
+
+    function logout() {
+        if(confirm("Ready to sign off?")) { 
+            // Do NOT use localStorage.clear() as it wipes saved profile pictures!
+            localStorage.removeItem("userEmail");
+            localStorage.removeItem("userName");
+            localStorage.removeItem("userRole");
+            window.location.href = "login.html"; 
+        }
+    }
+</script>
+<script src="scroll-animations.js" defer></script>
+
+</html>
+

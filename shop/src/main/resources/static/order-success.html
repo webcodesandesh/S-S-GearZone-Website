@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed! - S.S GearZone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+
+        :root {
+            --bg-color: #0B0501;
+            --surface: #161210;
+            --surface-raised: #1e1a18;
+            --primary: #FF6803;
+            --primary-hover: #AE3A02;
+            --text-main: #FFFFFF;
+            --text-muted: #BFBFBF;
+            --border-color: #2a2420;
+        }
+
+        
+        /* theme.css applied */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color) !important;
+            background: var(--bg-color) !important;
+            background-attachment: fixed !important;
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-muted) !important;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 15% 50%, rgba(255, 104, 3, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(174, 58, 2, 0.1) 0%, transparent 50%),
+                        rgba(11, 5, 1, 0.85);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ===== PARTICLE CANVAS (behind everything) ===== */
+        #particleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== RADIAL SPOTLIGHT ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(74,222,128,0.08) 0%, rgba(255,109,57,0.04) 40%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: spotlightPulse 3s ease-in-out infinite;
+        }
+        @keyframes spotlightPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        /* ===== MAIN SUCCESS CARD ===== */
+        .success-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 560px;
+        }
+
+        .success-card {
+            background: #161210;
+            border-radius: 28px;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            padding: 50px 40px 40px;
+            text-align: center;
+            box-shadow:
+                0 0 0 1px rgba(74,222,128,0.1),
+                0 30px 80px rgba(0,0,0,0.9),
+                0 0 60px rgba(74,222,128,0.07);
+            animation: cardSlideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+        @keyframes cardSlideUp {
+            from { opacity: 0; transform: translateY(60px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ===== ANIMATED SHIELD / CHECK ICON ===== */
+        .shield-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .shield-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid rgba(74,222,128,0.3);
+            animation: ringExpand 2s ease-out 0.5s infinite;
+        }
+        .shield-ring-2 {
+            animation-delay: 1s;
+        }
+        @keyframes ringExpand {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        .shield-main {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(74,222,128,0.3), rgba(74,222,128,0.05));
+            border: 3px solid #4ade80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: #4ade80;
+            box-shadow: 0 0 40px rgba(74,222,128,0.4), inset 0 0 30px rgba(74,222,128,0.1);
+            animation: shieldPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both, glowPulse 3s ease-in-out 1s infinite;
+        }
+        @keyframes shieldPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            80% { transform: scale(1.15) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(74,222,128,0.3), inset 0 0 20px rgba(74,222,128,0.1); }
+            50% { box-shadow: 0 0 50px rgba(74,222,128,0.6), inset 0 0 30px rgba(74,222,128,0.2); }
+        }
+
+        /* ===== TITLE & SUBTITLE ===== */
+        .success-title {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--text-main) 0%, #4ade80 60%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: fadeInDelay 0.6s ease 0.8s both;
+        }
+
+        .success-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            animation: fadeInDelay 0.6s ease 1s both;
+        }
+
+        @keyframes fadeInDelay {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ORDER ID BADGE ===== */
+        .order-id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 104, 3, 0.1);
+            border: 1px solid rgba(255,109,57,0.3);
+            border-radius: 50px;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+            animation: fadeInDelay 0.6s ease 1.1s both;
+        }
+
+        /* ===== DELIVERY TIMELINE ===== */
+        .timeline {
+            margin: 25px 0 30px;
+            animation: fadeInDelay 0.6s ease 1.2s both;
+        }
+
+        .timeline-track {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+            padding-top: 10px;
+        }
+        .timeline-track::before {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+        }
+        .timeline-track::after {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 10%;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, #4ade80, var(--primary));
+            animation: progressLine 2s ease 1.5s forwards;
+        }
+        @keyframes progressLine {
+            to { width: 45%; }
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 25%;
+            position: relative;
+        }
+
+        .timeline-dot {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: 2px solid var(--border-color);
+            background: var(--surface);
+            transition: 0.3s;
+            z-index: 1;
+        }
+        .timeline-step.done .timeline-dot {
+            background: rgba(74,222,128,0.15);
+            border-color: #4ade80;
+            color: #4ade80;
+            animation: dotPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s both;
+        }
+        .timeline-step.active .timeline-dot {
+            background: rgba(255,109,57,0.15);
+            border-color: var(--primary);
+            color: var(--primary);
+            animation: dotPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.8s both;
+        }
+        @keyframes dotPop {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        .timeline-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+        .timeline-step.done .timeline-label { color: #4ade80; }
+        .timeline-step.active .timeline-label { color: var(--primary); }
+        .timeline-step.inactive .timeline-label { color: #4a5568; }
+        .timeline-step.inactive .timeline-dot { color: #4a5568; }
+
+        /* ===== DELIVERY ETA CARD ===== */
+        .eta-card {
+            background: rgba(74,222,128,0.05);
+            border: 1px solid rgba(74,222,128,0.15);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            animation: fadeInDelay 0.6s ease 1.4s both;
+        }
+        .eta-icon { font-size: 2rem; }
+        .eta-text { text-align: left; flex-grow: 1; }
+        .eta-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+        .eta-date { font-size: 1.15rem; font-weight: 900; color: #4ade80; }
+
+        /* ===== ACTION BUTTONS ===== */
+        .btn-action-primary {
+            background: linear-gradient(135deg, var(--primary), #d94b18);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 24px;
+            font-weight: 900;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            transition: 0.3s;
+            margin-bottom: 12px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255,109,57,0.3);
+            animation: fadeInDelay 0.6s ease 1.6s both;
+        }
+        .btn-action-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255,109,57,0.5); }
+
+        .btn-action-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            transition: 0.3s;
+            margin-bottom: 10px;
+            cursor: pointer;
+            animation: fadeInDelay 0.6s ease 1.7s both;
+        }
+        .btn-action-secondary:hover { border-color: var(--text-muted); color: white; background: var(--border-color); }
+
+        .btn-ghost {
+            background: transparent;
+            color: #4ade80;
+            border: none;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: 0.3s;
+            animation: fadeInDelay 0.6s ease 1.8s both;
+        }
+        .btn-ghost:hover { background: rgba(74,222,128,0.1); }
+
+        /* ===== CONFETTI PARTICLES (canvas) ===== */
+    
+        .top-header, .card-custom, .amz-order-card, .dashboard-card, .sidebar, .offcanvas {
+            background: var(--surface) !important;
+        }
+    
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="theme.css">
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="success-wrapper">
+    <div class="success-card">
+
+        <!-- Animated Shield -->
+        <div class="shield-wrapper">
+            <div class="shield-ring"></div>
+            <div class="shield-ring shield-ring-2"></div>
+            <div class="shield-main">
+                <i class="bi bi-check-lg"></i>
+            </div>
+        </div>
+
+        <!-- Title -->
+        <div class="success-title">Mission Accomplished!</div>
+        <div class="success-subtitle">Your gear has been secured. Preparing for drop.</div>
+
+        <!-- Order ID Badge -->
+        <div class="order-id-badge">
+            <i class="bi bi-hash"></i>
+            <span id="orderIdDisplay">Order Placed</span>
+        </div>
+
+        <!-- Delivery Timeline -->
+        <div class="timeline">
+            <div class="timeline-track">
+                <div class="timeline-step done">
+                    <div class="timeline-dot"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="timeline-label">Confirmed</div>
+                </div>
+                <div class="timeline-step active">
+                    <div class="timeline-dot"><i class="bi bi-box-seam"></i></div>
+                    <div class="timeline-label">Packing</div>
+                </div>
+                <div class="timeline-step inactive">
+                    <div class="timeline-dot"><i class="bi bi-truck"></i></div>
+                    <div class="timeline-label">Shipped</div>
+                </div>
+                <div class="timeline-step inactive">
+                    <div class="timeline-dot"><i class="bi bi-house-door"></i></div>
+                    <div class="timeline-label">Delivered</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ETA -->
+        <div class="eta-card">
+            <div class="eta-icon"></div>
+            <div class="eta-text">
+                <div class="eta-label">Estimated Delivery</div>
+                <div class="eta-date" id="etaDate">3–5 Business Days</div>
+            </div>
+            <i class="bi bi-chevron-right" style="color: #4ade80;"></i>
+        </div>
+
+        <!-- Buttons -->
+        <button class="btn-action-primary" onclick="window.location.href='orders.html'">
+            <i class="bi bi-bag-check-fill me-2"></i> Track My Order
+        </button>
+        <button class="btn-action-secondary" id="btnViewInvoice" onclick="goToInvoice()">
+            <i class="bi bi-file-earmark-pdf-fill me-2"></i> Download Invoice (PDF)
+        </button>
+        <button class="btn-ghost" onclick="window.location.href='index.html'">
+            <i class="bi bi-controller me-1"></i> Continue Exploring Gear
+        </button>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ===== AUTH GUARD =====
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "login.html";
+    }
+
+    // ===== ORDER ID & ETA =====
+    window.onload = function () {
+        // Calculate ETA
+        const today = new Date();
+        const etaStart = new Date(today);
+        etaStart.setDate(today.getDate() + 3);
+        const etaEnd = new Date(today);
+        etaEnd.setDate(today.getDate() + 5);
+
+        const opts = { day: 'numeric', month: 'short' };
+        document.getElementById('etaDate').innerText =
+            etaStart.toLocaleDateString('en-IN', opts) + ' - ' + etaEnd.toLocaleDateString('en-IN', opts);
+
+        // Show last order ID by fetching all orders and filtering by this user's email
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            fetch('http://localhost:8080/api/orders')
+                .then(res => res.json())
+                .then(orders => {
+                    // Filter orders belonging to this user
+                    const myOrders = orders.filter(o => o.userEmail === email);
+                    if (myOrders && myOrders.length > 0) {
+                        // Get the latest order (highest ID)
+                        const lastOrder = myOrders.reduce((latest, o) => o.id > latest.id ? o : latest, myOrders[0]);
+                        document.getElementById('orderIdDisplay').innerText = 'Order #ORD-' + lastOrder.id;
+                        // Store the ID so invoice and track buttons work
+                        localStorage.setItem('lastOrderId', lastOrder.id);
+
+                        // Update Track button to go directly to this order
+                        const trackBtn = document.querySelector('.btn-action-primary');
+                        if (trackBtn) trackBtn.onclick = () => window.location.href = 'orders.html?id=' + lastOrder.id;
+                    }
+                }).catch(() => {
+                    // Silently fail  buttons still work via orders.html fallback
+                });
+        }
+
+        // Launch confetti!
+        launchConfetti();
+    };
+ 
+    function goToInvoice() {
+        const lastId = localStorage.getItem('lastOrderId');
+        if (lastId) {
+            // Go to invoice.html with the order ID
+            window.location.href = `invoice.html?id=${lastId}`;
+        } else {
+            // Fallback: try fetching order list one more time, then redirect
+            const email = localStorage.getItem('userEmail');
+            fetch('http://localhost:8080/api/orders')
+                .then(r => r.json())
+                .then(orders => {
+                    const myOrders = orders.filter(o => o.userEmail === email);
+                    if (myOrders.length > 0) {
+                        const lastOrder = myOrders.reduce((l, o) => o.id > l.id ? o : l, myOrders[0]);
+                        window.location.href = `invoice.html?id=${lastOrder.id}`;
+                    } else {
+                        window.location.href = 'orders.html';
+                    }
+                })
+                .catch(() => window.location.href = 'orders.html');
+        }
+    }
+
+    // ===== CONFETTI CANVAS =====
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    const COLORS = ['var(--primary)', '#4ade80', '#facc15', '#60a5fa', '#e879f9', '#fb7185', '#34d399'];
+    let particles = [];
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = -10;
+            this.size = Math.random() * 8 + 4;
+            this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            this.speedX = (Math.random() - 0.5) * 6;
+            this.speedY = Math.random() * 4 + 2;
+            this.rotation = Math.random() * 360;
+            this.rotationSpeed = (Math.random() - 0.5) * 10;
+            this.opacity = 1;
+            this.shape = Math.random() > 0.5 ? 'rect' : 'circle';
+            this.gravity = 0.1;
+        }
+        update() {
+            this.x += this.speedX;
+            this.speedY += this.gravity;
+            this.y += this.speedY;
+            this.rotation += this.rotationSpeed;
+            if (this.y > canvas.height * 0.6) {
+                this.opacity -= 0.02;
+            }
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, this.opacity);
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation * Math.PI / 180);
+            ctx.fillStyle = this.color;
+            if (this.shape === 'rect') {
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+            } else {
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+    }
+
+    function launchConfetti() {
+        // Burst spawn
+        for (let i = 0; i < 150; i++) {
+            setTimeout(() => particles.push(new Particle()), i * 15);
+        }
+        animateConfetti();
+    }
+
+    function animateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles = particles.filter(p => p.opacity > 0 && p.y < canvas.height + 20);
+        particles.forEach(p => { p.update(); p.draw(); });
+        if (particles.length > 0) {
+            requestAnimationFrame(animateConfetti);
+        }
+    }
+</script>
+<script src="scroll-animations.js" defer></script>
+
+</html>
+
